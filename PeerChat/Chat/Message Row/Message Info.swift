@@ -6,30 +6,32 @@ struct MessageInfo: View {
     init(_ message: Message) {
         self.message = message
     }
-    
-    private var sender: Person {
-        message.from
-    }
-    
+        
     var body: some View {
-        VStack {
+        List {
             Text(message.text)
             
-            Text(message.date, style: .date)
+            HStack {
+                Text(message.date, style: .date)
+                
+                Text(message.date, style: .time)
+            }
             
-            Text(sender.name)
+            Text(message.from.name)
         }
     }
 }
 
 #Preview {
-    MessageInfo(.init(
-        text: "Some message",
-        from: Person(
-            .init(displayName: "Preview Device"),
-            id: UUID(),
-            publicKey: "",
-            info: [:]
+    MessageInfo(
+        Message(
+            text: "Some message",
+            from: Person(
+                .init(displayName: "Preview Device"),
+                id: UUID(),
+                publicKey: "1234567890",
+                info: [:]
+            )
         )
-    ))
+    )
 }

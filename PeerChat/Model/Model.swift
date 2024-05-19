@@ -25,7 +25,7 @@ final class Model: NSObject {
         session = MCSession(peer: myPeerId, securityIdentity: nil, encryptionPreference: .required)
         serviceAdvertiser = MCNearbyServiceAdvertiser(peer: myPeerId, discoveryInfo: ["Status": SettingsView().status], serviceType: serviceType)
         serviceBrowser = MCNearbyServiceBrowser(peer: myPeerId, serviceType: serviceType)
-        myPerson = Person(self.session.myPeerID, id: UIDevice.current.identifierForVendor!, publicKey: crypto.publicKeyToString(crypto.publicKey), info: ["Status": SettingsView().status])
+        myPerson = Person(session.myPeerID, id: UIDevice.current.identifierForVendor!, publicKey: crypto.publicKeyToString(crypto.publicKey), info: ["Status": SettingsView().status])
         
         super.init()
         
@@ -38,20 +38,24 @@ final class Model: NSObject {
     }
     
     func disconnectPeer(_ uuid: UUID) {
-        if let duoChat = chats.first(where: { $0.person.id == uuid }) {
-            let peerID = duoChat.chat.peer
-            
-            sendCloseChatMessage(to: peerID)
-            
-            if let index = connectedPeers.firstIndex(of: peerID) {
-                connectedPeers.remove(at: index)
-            }
-            
-            session.cancelConnectPeer(peerID)
-            
-            chats.removeAll {
-                $0.chat.peer == peerID
-            }
+        let duoChat = chats.first(where: { $0.person.id == uuid })
+        
+        guard let duoChat else {
+            return
+        }
+        
+        let peerID = duoChat.chat.peer
+        
+        sendCloseChatMessage(to: peerID)
+        
+        if let index = connectedPeers.firstIndex(of: peerID) {
+            connectedPeers.remove(at: index)
+        }
+        
+        session.cancelConnectPeer(peerID)
+        
+        chats.removeAll {
+            $0.chat.peer == peerID
         }
     }
     
@@ -60,6 +64,7 @@ final class Model: NSObject {
         
         do {
             let data = try encoder.encode(closeMessage)
+            
             try session.send(data, toPeers: [peer], with: .reliable)
         } catch {
             print("Error sending close chat message: \(error)")
@@ -68,17 +73,25 @@ final class Model: NSObject {
     
     func sendDeleteRequest(_ id: UUID, to person: Person) {
         let deleteMessageContent = DeleteMessage(id)
-        let deleteMessage = ConnectMessage(messageType: .DeleteMessage, deleteMessage: deleteMessageContent)
         
-        if let duoChat = chats.first(where: { $0.person.id == person.id }) {
-            let peer = duoChat.chat.peer
-            
-            do {
-                let data = try encoder.encode(deleteMessage)
-                try session.send(data, toPeers: [peer], with: .reliable)
-            } catch {
-                print("Error sending delete message: \(error)")
-            }
+        let deleteMessage = ConnectMessage(
+            messageType: .DeleteMessage,
+            deleteMessage: deleteMessageContent
+        )
+        
+        let duoChat = chats.first(where: { $0.person.id == person.id })
+        
+        guard let duoChat else {
+            return
+        }
+        
+        let peer = duoChat.chat.peer
+        
+        do {
+            let data = try encoder.encode(deleteMessage)
+            try session.send(data, toPeers: [peer], with: .reliable)
+        } catch {
+            print("Error sending delete message: \(error)")
         }
     }
     
@@ -119,10 +132,17 @@ final class Model: NSObject {
         
         switch info.messageType {
         case .Message:
-            newMessage(message: info.message!, from: from, size: size)
+            newMessage(
+                message: info.message!, 
+                from: from,
+                size: size
+            )
             
         case .PeerInfo:
-            newPerson(person: info.peerInfo!, from: from)
+            newPerson(
+                person: info.peerInfo!, 
+                from: from
+            )
             
         case .CloseChat:
             handleCloseChat(from: from)
@@ -209,7 +229,11 @@ final class Model: NSObject {
         chats.append(newChat)
     }
     
-    func newMessage(message: Message, from: MCPeerID, size: Int) {
+    func newMessage(
+        message: Message,
+        from: MCPeerID,
+        size: Int
+    ) {
         let timeInterval = max(Date().timeIntervalSince(message.date), 0.001)
         let speed = Double(size) / timeInterval / 1024
         
@@ -229,7 +253,7 @@ extension Model: MCNearbyServiceAdvertiserDelegate {
         _ advertiser: MCNearbyServiceAdvertiser,
         didNotStartAdvertisingPeer error: Error
     ) {
-        print("Advertiser didNotStartAdvertisingPeer: \(String(describing: error))")
+        print("Advertiser didNotStartAdvertisingPeer: \(error.localizedDescription)")
     }
     
     func advertiser(

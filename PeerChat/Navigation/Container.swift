@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct AppContainer: View {
+struct Container: View {
     var body: some View {
         NavigationStack {
             HomeView()

@@ -18,7 +18,7 @@
 		F31188692BF90F7A0079A5FE /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = F311884A2BF90F7A0079A5FE /* Person.swift */; };
 		F311886A2BF90F7A0079A5FE /* Duo Chat.swift in Sources */ = {isa = PBXBuildFile; fileRef = F311884C2BF90F7A0079A5FE /* Duo Chat.swift */; };
 		F311886B2BF90F7A0079A5FE /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = F311884D2BF90F7A0079A5FE /* Model.swift */; };
-		F311886C2BF90F7A0079A5FE /* Navigation Stack.swift in Sources */ = {isa = PBXBuildFile; fileRef = F311884F2BF90F7A0079A5FE /* Navigation Stack.swift */; };
+		F311886C2BF90F7A0079A5FE /* Container.swift in Sources */ = {isa = PBXBuildFile; fileRef = F311884F2BF90F7A0079A5FE /* Container.swift */; };
 		F311886D2BF90F7A0079A5FE /* Message Row.swift in Sources */ = {isa = PBXBuildFile; fileRef = F31188512BF90F7A0079A5FE /* Message Row.swift */; };
 		F311886E2BF90F7A0079A5FE /* Message Info.swift in Sources */ = {isa = PBXBuildFile; fileRef = F31188522BF90F7A0079A5FE /* Message Info.swift */; };
 		F311886F2BF90F7A0079A5FE /* Chat View.swift in Sources */ = {isa = PBXBuildFile; fileRef = F31188542BF90F7A0079A5FE /* Chat View.swift */; };
@@ -30,8 +30,7 @@
 		F31188762BF90F7A0079A5FE /* Profile View.swift in Sources */ = {isa = PBXBuildFile; fileRef = F311885E2BF90F7A0079A5FE /* Profile View.swift */; };
 		F31188772BF90F7A0079A5FE /* Settings View.swift in Sources */ = {isa = PBXBuildFile; fileRef = F311885F2BF90F7A0079A5FE /* Settings View.swift */; };
 		F311887A2BF90FBF0079A5FE /* ScrechKit in Frameworks */ = {isa = PBXBuildFile; productRef = F31188792BF90FBF0079A5FE /* ScrechKit */; };
-		F36ACB362BF9DEE500B5744A /* Crypto Convert.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36ACB342BF9DEE500B5744A /* Crypto Convert.swift */; };
-		F36ACB372BF9DEE500B5744A /* Crypto Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = F36ACB352BF9DEE500B5744A /* Crypto Model.swift */; };
+		F36ACB3A2BF9E00A00B5744A /* Swifto Crypto in Frameworks */ = {isa = PBXBuildFile; productRef = F36ACB392BF9E00A00B5744A /* Swifto Crypto */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -60,7 +59,7 @@
 		F311884A2BF90F7A0079A5FE /* Person.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
 		F311884C2BF90F7A0079A5FE /* Duo Chat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Duo Chat.swift"; sourceTree = "<group>"; };
 		F311884D2BF90F7A0079A5FE /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
-		F311884F2BF90F7A0079A5FE /* Navigation Stack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Navigation Stack.swift"; sourceTree = "<group>"; };
+		F311884F2BF90F7A0079A5FE /* Container.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Container.swift; sourceTree = "<group>"; };
 		F31188512BF90F7A0079A5FE /* Message Row.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Message Row.swift"; sourceTree = "<group>"; };
 		F31188522BF90F7A0079A5FE /* Message Info.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Message Info.swift"; sourceTree = "<group>"; };
 		F31188542BF90F7A0079A5FE /* Chat View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Chat View.swift"; sourceTree = "<group>"; };
@@ -81,6 +80,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F36ACB3A2BF9E00A00B5744A /* Swifto Crypto in Frameworks */,
 				F311887A2BF90FBF0079A5FE /* ScrechKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -130,11 +130,11 @@
 		F311884E2BF90F7A0079A5FE /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				F311884B2BF90F7A0079A5FE /* Message Types */,
+				F311884D2BF90F7A0079A5FE /* Model.swift */,
 				F311884C2BF90F7A0079A5FE /* Duo Chat.swift */,
 				F36ACB342BF9DEE500B5744A /* Crypto Convert.swift */,
 				F36ACB352BF9DEE500B5744A /* Crypto Model.swift */,
-				F311884D2BF90F7A0079A5FE /* Model.swift */,
+				F311884B2BF90F7A0079A5FE /* Message Types */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -142,7 +142,7 @@
 		F31188502BF90F7A0079A5FE /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
-				F311884F2BF90F7A0079A5FE /* Navigation Stack.swift */,
+				F311884F2BF90F7A0079A5FE /* Container.swift */,
 			);
 			path = Navigation;
 			sourceTree = "<group>";
@@ -159,8 +159,8 @@
 		F31188552BF90F7A0079A5FE /* Chat */ = {
 			isa = PBXGroup;
 			children = (
-				F31188532BF90F7A0079A5FE /* Message Row */,
 				F31188542BF90F7A0079A5FE /* Chat View.swift */,
+				F31188532BF90F7A0079A5FE /* Message Row */,
 			);
 			path = Chat;
 			sourceTree = "<group>";
@@ -171,14 +171,14 @@
 				F311885D2BF90F7A0079A5FE /* Peer Chat.swift */,
 				F311887E2BF911180079A5FE /* Info.plist */,
 				F31188592BF90F7A0079A5FE /* Assets.xcassets */,
+				F31188502BF90F7A0079A5FE /* Navigation */,
 				F311885A2BF90F7A0079A5FE /* Content View.swift */,
 				F311885B2BF90F7A0079A5FE /* Home View.swift */,
 				F311885E2BF90F7A0079A5FE /* Profile View.swift */,
 				F311885F2BF90F7A0079A5FE /* Settings View.swift */,
 				F31188562BF90F7A0079A5FE /* TextField Style.swift */,
-				F31188502BF90F7A0079A5FE /* Navigation */,
-				F311884E2BF90F7A0079A5FE /* Model */,
 				F31188552BF90F7A0079A5FE /* Chat */,
+				F311884E2BF90F7A0079A5FE /* Model */,
 				F31188442BF90F7A0079A5FE /* Extensions */,
 			);
 			path = PeerChat;
@@ -203,6 +203,7 @@
 			name = PeerChat;
 			packageProductDependencies = (
 				F31188792BF90FBF0079A5FE /* ScrechKit */,
+				F36ACB392BF9E00A00B5744A /* Swifto Crypto */,
 			);
 			productName = PeerSotial;
 			productReference = 40EBFCE22A16E82D0041012C /* PeerChat.app */;
@@ -234,6 +235,7 @@
 			mainGroup = 40EBFCD92A16E82D0041012C;
 			packageReferences = (
 				F31188782BF90FBF0079A5FE /* XCRemoteSwiftPackageReference "ScrechKit" */,
+				F36ACB382BF9E00A00B5744A /* XCRemoteSwiftPackageReference "Swifto-Crypto" */,
 			);
 			productRefGroup = 40EBFCE32A16E82D0041012C /* Products */;
 			projectDirPath = "";
@@ -263,7 +265,6 @@
 				F311886E2BF90F7A0079A5FE /* Message Info.swift in Sources */,
 				F311886F2BF90F7A0079A5FE /* Chat View.swift in Sources */,
 				F31188632BF90F7A0079A5FE /* UUID.swift in Sources */,
-				F36ACB362BF9DEE500B5744A /* Crypto Convert.swift in Sources */,
 				F31188662BF90F7A0079A5FE /* Delete Message.swift in Sources */,
 				F31188752BF90F7A0079A5FE /* Peer Chat.swift in Sources */,
 				F31188732BF90F7A0079A5FE /* Home View.swift in Sources */,
@@ -272,9 +273,8 @@
 				F31188622BF90F7A0079A5FE /* String + Exts.swift in Sources */,
 				F31188762BF90F7A0079A5FE /* Profile View.swift in Sources */,
 				F31188612BF90F7A0079A5FE /* Character + Exts.swift in Sources */,
-				F36ACB372BF9DEE500B5744A /* Crypto Model.swift in Sources */,
 				F31188692BF90F7A0079A5FE /* Person.swift in Sources */,
-				F311886C2BF90F7A0079A5FE /* Navigation Stack.swift in Sources */,
+				F311886C2BF90F7A0079A5FE /* Container.swift in Sources */,
 				F31188772BF90F7A0079A5FE /* Settings View.swift in Sources */,
 				F31188652BF90F7A0079A5FE /* Connect Message.swift in Sources */,
 				F311886B2BF90F7A0079A5FE /* Model.swift in Sources */,
@@ -497,6 +497,14 @@
 				kind = branch;
 			};
 		};
+		F36ACB382BF9E00A00B5744A /* XCRemoteSwiftPackageReference "Swifto-Crypto" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/TopScrech/Swifto-Crypto";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -504,6 +512,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F31188782BF90FBF0079A5FE /* XCRemoteSwiftPackageReference "ScrechKit" */;
 			productName = ScrechKit;
+		};
+		F36ACB392BF9E00A00B5744A /* Swifto Crypto */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F36ACB382BF9E00A00B5744A /* XCRemoteSwiftPackageReference "Swifto-Crypto" */;
+			productName = "Swifto Crypto";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

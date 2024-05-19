@@ -3,9 +3,7 @@ import CryptoKit
 
 extension CryptoModel {
     func publicKeyToString(_ publicKey: P521.KeyAgreement.PublicKey) -> String {
-        let data = publicKey.rawRepresentation
-        
-        return data.base64EncodedString()
+        publicKey.rawRepresentation.base64EncodedString()
     }
     
     func stringToPublicKey(_ string: String) -> P521.KeyAgreement.PublicKey? {

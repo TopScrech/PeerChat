@@ -4,7 +4,7 @@ import ScrechKit
 struct PeerChat: App {
     var body: some Scene {
         WindowGroup {
-            AppContainer()
+            Container()
         }
     }
 }

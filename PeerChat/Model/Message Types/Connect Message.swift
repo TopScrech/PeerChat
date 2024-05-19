@@ -2,10 +2,10 @@ import Foundation
 
 struct ConnectMessage: Codable {
     enum MessageType: Codable {
-        case Message
-        case PeerInfo
-        case CloseChat
-        case DeleteMessage
+        case Message,
+             PeerInfo,
+             CloseChat,
+             DeleteMessage
     }
     
     var messageType: MessageType = .Message
