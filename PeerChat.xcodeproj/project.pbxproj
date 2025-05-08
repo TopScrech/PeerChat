@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 90;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -36,13 +36,11 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		40EBFCFC2A16E9E70041012C /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
 			dstPath = "";
-			dstSubfolderSpec = 10;
+			dstSubfolder = Frameworks;
 			files = (
 			);
 			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -78,12 +76,10 @@
 /* Begin PBXFrameworksBuildPhase section */
 		40EBFCDF2A16E82D0041012C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				F36ACB3A2BF9E00A00B5744A /* Swifto Crypto in Frameworks */,
 				F311887A2BF90FBF0079A5FE /* ScrechKit in Frameworks */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
@@ -198,8 +194,6 @@
 			);
 			buildRules = (
 			);
-			dependencies = (
-			);
 			name = PeerChat;
 			packageProductDependencies = (
 				F31188792BF90FBF0079A5FE /* ScrechKit */,
@@ -217,7 +211,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1420;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 1640;
 				TargetAttributes = {
 					40EBFCE12A16E82D0041012C = {
 						CreatedOnToolsVersion = 14.2;
@@ -236,7 +230,7 @@
 				F31188782BF90FBF0079A5FE /* XCRemoteSwiftPackageReference "ScrechKit" */,
 				F36ACB382BF9E00A00B5744A /* XCRemoteSwiftPackageReference "Swifto-Crypto" */,
 			);
-			preferredProjectObjectVersion = 77;
+			preferredProjectObjectVersion = 90;
 			productRefGroup = 40EBFCE32A16E82D0041012C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -249,18 +243,15 @@
 /* Begin PBXResourcesBuildPhase section */
 		40EBFCE02A16E82D0041012C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				F31188712BF90F7A0079A5FE /* Assets.xcassets in Resources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		40EBFCDE2A16E82D0041012C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
 			files = (
 				F311886E2BF90F7A0079A5FE /* Message Info.swift in Sources */,
 				F311886F2BF90F7A0079A5FE /* Chat View.swift in Sources */,
@@ -284,12 +275,11 @@
 				F31188702BF90F7A0079A5FE /* TextField Style.swift in Sources */,
 				F311886A2BF90F7A0079A5FE /* Duo Chat.swift in Sources */,
 			);
-			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		40EBFCEE2A16E82F0041012C /* Debug */ = {
+		40EBFCEE2A16E82F0041012C /* Debug configuration for PBXProject "PeerChat" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -323,6 +313,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 8FQUA2F388;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -350,7 +341,7 @@
 			};
 			name = Debug;
 		};
-		40EBFCEF2A16E82F0041012C /* Release */ = {
+		40EBFCEF2A16E82F0041012C /* Release configuration for PBXProject "PeerChat" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -384,6 +375,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 8FQUA2F388;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -405,14 +397,13 @@
 			};
 			name = Release;
 		};
-		40EBFCF12A16E82F0041012C /* Debug */ = {
+		40EBFCF12A16E82F0041012C /* Debug configuration for PBXNativeTarget "PeerChat" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 0;
-				DEVELOPMENT_TEAM = 8FQUA2F388;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PeerChat/Info.plist;
@@ -435,14 +426,13 @@
 			};
 			name = Debug;
 		};
-		40EBFCF22A16E82F0041012C /* Release */ = {
+		40EBFCF22A16E82F0041012C /* Release configuration for PBXNativeTarget "PeerChat" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 0;
-				DEVELOPMENT_TEAM = 8FQUA2F388;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = PeerChat/Info.plist;
@@ -471,19 +461,17 @@
 		40EBFCDD2A16E82D0041012C /* Build configuration list for PBXProject "PeerChat" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				40EBFCEE2A16E82F0041012C /* Debug */,
-				40EBFCEF2A16E82F0041012C /* Release */,
+				40EBFCEE2A16E82F0041012C /* Debug configuration for PBXProject "PeerChat" */,
+				40EBFCEF2A16E82F0041012C /* Release configuration for PBXProject "PeerChat" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 		40EBFCF02A16E82F0041012C /* Build configuration list for PBXNativeTarget "PeerChat" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				40EBFCF12A16E82F0041012C /* Debug */,
-				40EBFCF22A16E82F0041012C /* Release */,
+				40EBFCF12A16E82F0041012C /* Debug configuration for PBXNativeTarget "PeerChat" */,
+				40EBFCF22A16E82F0041012C /* Release configuration for PBXNativeTarget "PeerChat" */,
 			);
-			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
