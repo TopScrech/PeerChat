@@ -22,10 +22,29 @@ final class Model: NSObject {
     init(_ crypto: CryptoModel) {
         self.crypto = crypto
         
-        session = MCSession(peer: myPeerId, securityIdentity: nil, encryptionPreference: .required)
-        serviceAdvertiser = MCNearbyServiceAdvertiser(peer: myPeerId, discoveryInfo: ["Status": SettingsView().status], serviceType: serviceType)
-        serviceBrowser = MCNearbyServiceBrowser(peer: myPeerId, serviceType: serviceType)
-        myPerson = Person(session.myPeerID, id: UIDevice.current.identifierForVendor!, publicKey: crypto.publicKeyToString(crypto.publicKey), info: ["Status": SettingsView().status])
+        session = MCSession(
+            peer: myPeerId,
+            securityIdentity: nil,
+            encryptionPreference: .required
+        )
+        
+        serviceAdvertiser = MCNearbyServiceAdvertiser(
+            peer: myPeerId,
+            discoveryInfo: ["Status": SettingsView().status],
+            serviceType: serviceType
+        )
+        
+        serviceBrowser = MCNearbyServiceBrowser(
+            peer: myPeerId,
+            serviceType: serviceType
+        )
+        
+        myPerson = Person(
+            session.myPeerID,
+            id: UIDevice.current.identifierForVendor!,
+            publicKey: crypto.publicKeyToString(crypto.publicKey),
+            info: ["Status": SettingsView().status]
+        )
         
         super.init()
         
@@ -67,7 +86,7 @@ final class Model: NSObject {
             
             try session.send(data, toPeers: [peer], with: .reliable)
         } catch {
-            print("Error sending close chat message: \(error)")
+            print("Error sending close chat message:", error)
         }
     }
     
@@ -91,12 +110,12 @@ final class Model: NSObject {
             let data = try encoder.encode(deleteMessage)
             try session.send(data, toPeers: [peer], with: .reliable)
         } catch {
-            print("Error sending delete message: \(error)")
+            print("Error sending delete message:", error)
         }
     }
     
     func send(_ messageText: String, chat: Chat) {
-        print("Sent \"\(messageText)\" to \(chat.peer.displayName)")
+        print("Sent \"\(messageText)\" to", chat.peer.displayName)
         
         let encryptedMessageData = crypto.encrypt(messageText, using: crypto.stringToPublicKey(crypto.publicKeyToString(crypto.receivedPublicKey!))!)
         let encryptedMessage = encryptedMessageData!.base64EncodedString()
@@ -121,14 +140,14 @@ final class Model: NSObject {
                         try self.session.send(data, toPeers: [chat.peer], with: .reliable)
                     }
                 } catch {
-                    print("Error for sending: \(error.localizedDescription)")
+                    print("Error for sending:", error.localizedDescription)
                 }
             }
         }
     }
     
     func reciveInfo(info: ConnectMessage, from: MCPeerID, size: Int) {
-        print("Received info: \(info.messageType)")
+        print("Received info:", info.messageType)
         
         switch info.messageType {
         case .Message:
@@ -148,15 +167,15 @@ final class Model: NSObject {
             handleCloseChat(from: from)
             
         case .DeleteMessage:
-            print("From MCPeerID: \(from.displayName)")
-            print("Available chats: \(chats)")
-            print("DeleteMessage content: \(String(describing: info.deleteMessage))")
+            print("From MCPeerID:", from.displayName)
+            print("Available chats:", chats)
+            print("DeleteMessage content:", String(describing: info.deleteMessage))
             
             if let personKey = chats.first(where: { $0.chat.peer == from })?.person,
                let message = info.deleteMessage {
                 let idToDelete = message.idToDelete
                 
-                print("Delete message \(idToDelete.description)")
+                print("Delete message", idToDelete.description)
                 
                 deleteMessage(idToDelete, person: personKey)
                 
@@ -190,7 +209,7 @@ final class Model: NSObject {
     }
     
     func handleCloseChat(from peer: MCPeerID) {
-        print("\(peer.displayName) has disconnected")
+        print(peer.displayName, "has disconnected")
         
         session.disconnect()
         changeState.toggle()
@@ -209,7 +228,7 @@ final class Model: NSObject {
     //    }
     
     func newConnection(peer: MCPeerID) {
-        print("New Connection: \(peer.displayName)")
+        print("New Connection:", peer.displayName)
         
         let newMessage = ConnectMessage(messageType: .PeerInfo, peerInfo: self.myPerson)
         
@@ -218,12 +237,12 @@ final class Model: NSObject {
                 try session.send(data, toPeers: [peer], with: .reliable)
             }
         } catch {
-            print("Error for newConnection: \(String(describing: error))")
+            print("Error for newConnection:", String(describing: error))
         }
     }
     
     func newPerson(person: Person, from: MCPeerID) {
-        print("New Person: \(person.name)")
+        print("New Person:", person.name)
         
         let newChat = DuoChat(person: person, chat: Chat(peer: from, person: person))
         chats.append(newChat)
@@ -253,16 +272,16 @@ extension Model: MCNearbyServiceAdvertiserDelegate {
         _ advertiser: MCNearbyServiceAdvertiser,
         didNotStartAdvertisingPeer error: Error
     ) {
-        print("Advertiser didNotStartAdvertisingPeer: \(error.localizedDescription)")
+        print("Advertiser didNotStartAdvertisingPeer:", error.localizedDescription)
     }
     
     func advertiser(
         _ advertiser: MCNearbyServiceAdvertiser,
-        didReceiveInvitationFromPeer peerID: MCPeerID,
+        didReceiveInvitationFromPeer peerId: MCPeerID,
         withContext context: Data?,
         invitationHandler: @escaping (Bool, MCSession?) -> Void
     ) {
-        print("didReceiveInvitationFromPeer \(peerID)")
+        print("didReceiveInvitationFromPeer", peerId)
         
         main {
             invitationHandler(true, self.session)
@@ -292,7 +311,7 @@ extension Model: MCNearbyServiceBrowserDelegate {
         _ browser: MCNearbyServiceBrowser,
         didNotStartBrowsingForPeers error: Error)
     {
-        print("ServiceBrowser didNotStartBrowsingForPeers: \(String(describing: error))")
+        print("ServiceBrowser didNotStartBrowsingForPeers:", String(describing: error))
     }
     
     func browser(
@@ -300,7 +319,7 @@ extension Model: MCNearbyServiceBrowserDelegate {
         foundPeer peerID: MCPeerID,
         withDiscoveryInfo info: [String: String]?
     ) {
-        print("ServiceBrowser found peer: \(peerID)")
+        print("ServiceBrowser found peer:", peerID)
         
         main {
             browser.invitePeer(
@@ -316,7 +335,7 @@ extension Model: MCNearbyServiceBrowserDelegate {
         _ browser: MCNearbyServiceBrowser,
         lostPeer peerID: MCPeerID
     ) {
-        print("ServiceBrowser lost peer: \(peerID)")
+        print("ServiceBrowser lost peer:", peerID)
     }
 }
 
@@ -326,7 +345,7 @@ extension Model: MCSessionDelegate {
         peer peerID: MCPeerID,
         didChange state: MCSessionState
     ) {
-        print("peer \(peerID) didChangeState: \(state.rawValue)")
+        print("peer \(peerID) didChangeState:", state.rawValue)
         
         main {
             if state == .connected {
@@ -344,7 +363,11 @@ extension Model: MCSessionDelegate {
     ) {
         if let message = try? decoder.decode(ConnectMessage.self, from: data) {
             main {
-                self.reciveInfo(info: message, from: peerID, size: data.count)
+                self.reciveInfo(
+                    info: message,
+                    from: peerID,
+                    size: data.count
+                )
             }
         }
     }
