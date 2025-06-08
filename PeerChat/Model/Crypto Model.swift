@@ -36,7 +36,10 @@ final class CryptoModel {
         guard
             let data = text.data(using: .utf8),
             let encryptedData = try? ChaChaPoly
-                .seal(data, using: sharedSymmetricKey(privateKey: privateKey, publicKey: publicKey))
+                .seal(data, using: sharedSymmetricKey(
+                    privateKey: privateKey,
+                    publicKey: publicKey
+                ))
                 .combined
         else {
             print("Encryption failed")
@@ -54,7 +57,9 @@ final class CryptoModel {
         guard
             let publicKey = receivedPublicKey,
             let box = try? ChaChaPoly.SealedBox(combined: data),
-            let decryptedData = try? ChaChaPoly.open(box, using: sharedSymmetricKey(privateKey: privateKey, publicKey: publicKey)),
+            let decryptedData = try? ChaChaPoly.open(box, using: sharedSymmetricKey(
+                privateKey: privateKey, publicKey: publicKey
+            )),
             let decryptedText = String(data: decryptedData, encoding: .utf8)
         else {
             print("Decryption failed")
