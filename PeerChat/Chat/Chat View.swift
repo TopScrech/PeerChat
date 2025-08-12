@@ -15,7 +15,7 @@ struct ChatView: View {
     @State private var newMessage = ""
     
     var body: some View {
-        GeometryReader { geometry in
+        GeometryReader { geo in
             ScrollViewReader { scrollView in
                 VStack {
                     Text(person.info?.description ?? "No info")
@@ -24,14 +24,14 @@ struct ChatView: View {
                         VStack(spacing: 4) {
                             if let chat = model.chats.first(where: { $0.person.id == person.id })?.chat {
                                 ForEach(chat.messages, id: \.id) { message in
-                                    MessageRow(message, person: person, geo: geometry)
+                                    MessageRow(message, person: person, geo: geo)
                                         .environment(crypto)
                                         .padding(.horizontal)
                                 }
                             }
                         }
                     }
-                    .onChange(of: model.chats.first(where: { $0.person.id == person.id })?.chat.messages) { _, _ in
+                    .onChange(of: model.chats.first(where: { $0.person.id == person.id })?.chat.messages) {
                         main {
                             if let last = model.chats.first(where: { $0.person.id == person.id })?.chat.messages.last {
                                 withAnimation(.spring) {
