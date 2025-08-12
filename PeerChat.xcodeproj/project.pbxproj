@@ -31,6 +31,7 @@
 		F31188772BF90F7A0079A5FE /* Settings View.swift in Sources */ = {isa = PBXBuildFile; fileRef = F311885F2BF90F7A0079A5FE /* Settings View.swift */; };
 		F311887A2BF90FBF0079A5FE /* ScrechKit in Frameworks */ = {isa = PBXBuildFile; productRef = F31188792BF90FBF0079A5FE /* ScrechKit */; };
 		F36ACB3A2BF9E00A00B5744A /* Swifto Crypto in Frameworks */ = {isa = PBXBuildFile; productRef = F36ACB392BF9E00A00B5744A /* Swifto Crypto */; };
+		F3F5574B2E4B62A5006E1669 /* ValueStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3F5574A2E4B62A5006E1669 /* ValueStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -71,6 +72,7 @@
 		F311887E2BF911180079A5FE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		F36ACB342BF9DEE500B5744A /* Crypto Convert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Crypto Convert.swift"; sourceTree = "<group>"; };
 		F36ACB352BF9DEE500B5744A /* Crypto Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Crypto Model.swift"; sourceTree = "<group>"; };
+		F3F5574A2E4B62A5006E1669 /* ValueStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,6 +167,7 @@
 			isa = PBXGroup;
 			children = (
 				F311885D2BF90F7A0079A5FE /* Peer Chat.swift */,
+				F3F5574A2E4B62A5006E1669 /* ValueStore.swift */,
 				F311887E2BF911180079A5FE /* Info.plist */,
 				F31188592BF90F7A0079A5FE /* Assets.xcassets */,
 				F31188502BF90F7A0079A5FE /* Navigation */,
@@ -256,6 +259,7 @@
 				F311886E2BF90F7A0079A5FE /* Message Info.swift in Sources */,
 				F311886F2BF90F7A0079A5FE /* Chat View.swift in Sources */,
 				F31188632BF90F7A0079A5FE /* UUID.swift in Sources */,
+				F3F5574B2E4B62A5006E1669 /* ValueStore.swift in Sources */,
 				F31188662BF90F7A0079A5FE /* Delete Message.swift in Sources */,
 				F31188752BF90F7A0079A5FE /* Peer Chat.swift in Sources */,
 				F31188732BF90F7A0079A5FE /* Home View.swift in Sources */,

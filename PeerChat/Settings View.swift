@@ -1,18 +1,18 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("nickname") var nickname = UIDevice.current.model
-    @AppStorage("status") var status = ""
+    @EnvironmentObject private var store: ValueStore
     
     var body: some View {
         List {
-            TextField("Nickname", text: $nickname)
+            TextField("Nickname", text: $store.nickname)
             
-            TextField("Status", text: $status)
+            TextField("Status", text: $store.status)
         }
     }
 }
 
 #Preview {
     SettingsView()
+        .environmentObject(ValueStore())
 }

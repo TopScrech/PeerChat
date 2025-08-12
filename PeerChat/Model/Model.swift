@@ -5,7 +5,7 @@ import SwiftoCrypto
 @Observable
 final class Model: NSObject {
     private let serviceType = "PeerChat"
-    private let myPeerId = MCPeerID(displayName: SettingsView().nickname)
+    private let myPeerId = MCPeerID(displayName: ValueStore().nickname)
     private let serviceAdvertiser: MCNearbyServiceAdvertiser
     private let serviceBrowser: MCNearbyServiceBrowser
     private let session: MCSession
@@ -30,7 +30,7 @@ final class Model: NSObject {
         
         serviceAdvertiser = MCNearbyServiceAdvertiser(
             peer: myPeerId,
-            discoveryInfo: ["Status": SettingsView().status],
+            discoveryInfo: ["Status": ValueStore().status],
             serviceType: serviceType
         )
         
@@ -43,7 +43,9 @@ final class Model: NSObject {
             session.myPeerID,
             id: UIDevice.current.identifierForVendor!,
             publicKey: crypto.publicKeyToString(crypto.publicKey),
-            info: ["Status": SettingsView().status]
+            info: [
+                "Status": ValueStore().status
+            ]
         )
         
         super.init()
@@ -57,7 +59,9 @@ final class Model: NSObject {
     }
     
     func disconnectPeer(_ uuid: UUID) {
-        let duoChat = chats.first(where: { $0.person.id == uuid })
+        let duoChat = chats.first {
+            $0.person.id == uuid
+        }
         
         guard let duoChat else {
             return
@@ -98,7 +102,9 @@ final class Model: NSObject {
             deleteMessage: deleteMessageContent
         )
         
-        let duoChat = chats.first(where: { $0.person.id == person.id })
+        let duoChat = chats.first {
+            $0.person.id == person.id
+        }
         
         guard let duoChat else {
             return
@@ -152,14 +158,14 @@ final class Model: NSObject {
         switch info.messageType {
         case .Message:
             newMessage(
-                message: info.message!, 
+                message: info.message!,
                 from: from,
                 size: size
             )
             
         case .PeerInfo:
             newPerson(
-                person: info.peerInfo!, 
+                person: info.peerInfo!,
                 from: from
             )
             
@@ -256,10 +262,8 @@ final class Model: NSObject {
         let timeInterval = max(Date().timeIntervalSince(message.date), 0.001)
         let speed = Double(size) / timeInterval / 1024
         
-        print("""
-            New Message: \(message.text)
-            Speed: \(Int(speed)) KB/s
-        """)
+        print("New Message:", message.text)
+        print("Speed: \(Int(speed)) KB/s")
         
         if let index = chats.firstIndex(where: { $0.person.id == message.from.id }) {
             chats[index].chat.messages.append(message)
@@ -345,7 +349,7 @@ extension Model: MCSessionDelegate {
         peer peerID: MCPeerID,
         didChange state: MCSessionState
     ) {
-        print("peer \(peerID) didChangeState:", state.rawValue)
+        print("peer", peerID, "didChangeState:", state.rawValue)
         
         main {
             if state == .connected {
