@@ -15,7 +15,6 @@ final class CryptoModel {
         privateKey: P521.KeyAgreement.PrivateKey,
         publicKey: P521.KeyAgreement.PublicKey
     ) -> SymmetricKey {
-        
         let sharedSecret = try! privateKey.sharedSecretFromKeyAgreement(with: publicKey)
         
         let symmetricKey = sharedSecret.hkdfDerivedSymmetricKey(
@@ -28,11 +27,7 @@ final class CryptoModel {
         return symmetricKey
     }
     
-    func encrypt(
-        _ text: String,
-        using publicKey: P521.KeyAgreement.PublicKey
-    ) -> Data? {
-        
+    func encrypt(_ text: String, using publicKey: P521.KeyAgreement.PublicKey) -> Data? {
         guard
             let data = text.data(using: .utf8),
             let encryptedData = try? ChaChaPoly
@@ -49,11 +44,7 @@ final class CryptoModel {
         return encryptedData
     }
     
-    func decrypt(
-        _ data: Data,
-        using privateKey: P521.KeyAgreement.PrivateKey
-    ) -> String? {
-        
+    func decrypt(_ data: Data, using privateKey: P521.KeyAgreement.PrivateKey) -> String? {
         guard
             let publicKey = receivedPublicKey,
             let box = try? ChaChaPoly.SealedBox(combined: data),

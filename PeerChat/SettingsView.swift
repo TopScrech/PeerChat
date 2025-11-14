@@ -6,7 +6,6 @@ struct SettingsView: View {
     var body: some View {
         List {
             TextField("Nickname", text: $store.nickname)
-            
             TextField("Status", text: $store.status)
         }
     }

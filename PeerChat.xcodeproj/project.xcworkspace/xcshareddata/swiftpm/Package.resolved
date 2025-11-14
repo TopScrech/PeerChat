@@ -7,7 +7,7 @@
       "location" : "https://github.com/TopScrech/ScrechKit",
       "state" : {
         "branch" : "main",
-        "revision" : "b1fdb36b9bc2bcfce03d78b88c4da93b4c18b006"
+        "revision" : "d8ffdc58388da376d18a7b71f0e78f34e5416219"
       }
     },
     {
@@ -16,7 +16,7 @@
       "location" : "https://github.com/TopScrech/Swifto-Crypto",
       "state" : {
         "branch" : "main",
-        "revision" : "ae742910100c8d79824966bcda5bfb92ecc28884"
+        "revision" : "40e7d3af3258c39c5a052c7ca22dbb35e6853dc1"
       }
     }
   ],

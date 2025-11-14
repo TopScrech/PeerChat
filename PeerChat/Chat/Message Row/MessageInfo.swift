@@ -6,14 +6,13 @@ struct MessageInfo: View {
     init(_ message: Message) {
         self.message = message
     }
-        
+    
     var body: some View {
         List {
             Text(message.text)
             
             HStack {
                 Text(message.date, style: .date)
-                
                 Text(message.date, style: .time)
             }
             
