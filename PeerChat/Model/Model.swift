@@ -1,5 +1,5 @@
 import ScrechKit
-import MultipeerConnectivity
+@preconcurrency import MultipeerConnectivity
 import SwiftoCrypto
 
 @Observable
@@ -8,9 +8,10 @@ final class Model: NSObject {
     private let myPeerId = MCPeerID(displayName: ValueStore().nickname)
     private let serviceAdvertiser: MCNearbyServiceAdvertiser
     private let serviceBrowser: MCNearbyServiceBrowser
-    private let session: MCSession
+    nonisolated(unsafe) private let session: MCSession
     private let encoder = PropertyListEncoder()
     private let decoder = PropertyListDecoder()
+    private var invitedPeers: Set<MCPeerID> = []
     
     var connectedPeers: [MCPeerID] = []
     var chats: [DuoChat] = []
@@ -39,9 +40,11 @@ final class Model: NSObject {
             serviceType: serviceType
         )
         
+        let deviceId = UIDevice.current.identifierForVendor ?? UUID()
+        
         myPerson = Person(
             session.myPeerID,
-            id: UIDevice.current.identifierForVendor!,
+            id: deviceId,
             publicKey: crypto.publicKeyToString(crypto.publicKey),
             info: [
                 "Status": ValueStore().status
@@ -121,8 +124,17 @@ final class Model: NSObject {
     func send(_ messageText: String, chat: Chat) {
         print("Sent \"\(messageText)\" to", chat.peer.displayName)
         
-        let encryptedMessageData = crypto.encrypt(messageText, using: crypto.stringToPublicKey(crypto.publicKeyToString(crypto.receivedPublicKey!))!)
-        let encryptedMessage = encryptedMessageData!.base64EncodedString()
+        guard let receivedPublicKey = crypto.receivedPublicKey else {
+            print("Missing peer public key")
+            return
+        }
+        
+        guard let encryptedMessageData = crypto.encrypt(messageText, using: receivedPublicKey) else {
+            print("Could not encrypt message")
+            return
+        }
+        
+        let encryptedMessage = encryptedMessageData.base64EncodedString()
         
         let newMessage = ConnectMessage(
             messageType: .Message,
@@ -135,8 +147,9 @@ final class Model: NSObject {
         if !self.session.connectedPeers.isEmpty {
             do {
                 if let data = try? self.encoder.encode(newMessage) {
-                    if let index = self.chats.firstIndex(where: { $0.person.id == chat.person.id }) {
-                        self.chats[index].chat.messages.append(newMessage.message!)
+                    if let newMessagePayload = newMessage.message,
+                       let index = self.chats.firstIndex(where: { $0.person.id == chat.person.id }) {
+                        self.chats[index].chat.messages.append(newMessagePayload)
                     }
                     
                     try self.session.send(data, toPeers: [chat.peer], with: .reliable)
@@ -152,15 +165,25 @@ final class Model: NSObject {
         
         switch info.messageType {
         case .Message:
+            guard let message = info.message else {
+                print("Missing message payload")
+                return
+            }
+            
             newMessage(
-                message: info.message!,
+                message: message,
                 from: from,
                 size: size
             )
             
         case .PeerInfo:
+            guard let peerInfo = info.peerInfo else {
+                print("Missing peer info payload")
+                return
+            }
+            
             newPerson(
-                person: info.peerInfo!,
+                person: peerInfo,
                 from: from
             )
             
@@ -239,6 +262,10 @@ final class Model: NSObject {
     }
     
     func newPerson(person: Person, from: MCPeerID) {
+        if chats.contains(where: { $0.person.id == person.id }) {
+            return
+        }
+        
         print("New Person:", person.name)
         
         let newChat = DuoChat(person: person, chat: Chat(peer: from, person: person))
@@ -263,14 +290,14 @@ final class Model: NSObject {
 }
 
 extension Model: MCNearbyServiceAdvertiserDelegate {
-    func advertiser(
+    nonisolated func advertiser(
         _ advertiser: MCNearbyServiceAdvertiser,
         didNotStartAdvertisingPeer error: Error
     ) {
         print("Advertiser didNotStartAdvertisingPeer:", error.localizedDescription)
     }
     
-    func advertiser(
+    nonisolated func advertiser(
         _ advertiser: MCNearbyServiceAdvertiser,
         didReceiveInvitationFromPeer peerId: MCPeerID,
         withContext context: Data?,
@@ -278,7 +305,7 @@ extension Model: MCNearbyServiceAdvertiserDelegate {
     ) {
         print("didReceiveInvitationFromPeer", peerId)
         
-        invitationHandler(true, self.session)
+        invitationHandler(true, session)
     }
 }
 
@@ -300,63 +327,54 @@ extension Model {
 }
 
 extension Model: MCNearbyServiceBrowserDelegate {
-    func browser(
+    nonisolated func browser(
         _ browser: MCNearbyServiceBrowser,
         didNotStartBrowsingForPeers error: Error)
     {
         print("ServiceBrowser didNotStartBrowsingForPeers:", String(describing: error))
     }
     
-    func browser(
+    nonisolated func browser(
         _ browser: MCNearbyServiceBrowser,
         foundPeer peerID: MCPeerID,
         withDiscoveryInfo info: [String: String]?
     ) {
-        print("ServiceBrowser found peer:", peerID)
-        
-        browser.invitePeer(
-            peerID,
-            to: self.session,
-            withContext: nil,
-            timeout: 10
-        )
+        Task { @MainActor [weak self] in
+            self?.foundPeer(peerID)
+        }
     }
     
-    func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
+    nonisolated func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
+        Task { @MainActor [weak self] in
+            self?.invitedPeers.remove(peerID)
+        }
+        
         print("ServiceBrowser lost peer:", peerID)
     }
 }
 
 extension Model: MCSessionDelegate {
-    func session(
+    nonisolated func session(
         _ session: MCSession,
         peer peerID: MCPeerID,
         didChange state: MCSessionState
     ) {
-        print("peer", peerID, "didChangeState:", state.rawValue)
-        
-        if state == .connected {
-            self.newConnection(peer: peerID)
+        Task { @MainActor [weak self] in
+            self?.didChangePeerState(peerID: peerID, state: state)
         }
-        
-        self.connectedPeers = session.connectedPeers
     }
     
-    func session(
+    nonisolated func session(
         _ session: MCSession,
         didReceive data: Data,
         fromPeer peerID: MCPeerID
     ) {
-        if let message = try? decoder.decode(ConnectMessage.self, from: data) {
-            self.reciveInfo(
-                info: message,
-                from: peerID,
-                size: data.count
-            )
+        Task { @MainActor [weak self] in
+            self?.didReceiveData(data, from: peerID)
         }
     }
     
-    public func session(
+    nonisolated public func session(
         _ session: MCSession,
         didReceive stream: InputStream,
         withName streamName: String,
@@ -365,7 +383,7 @@ extension Model: MCSessionDelegate {
         print("Receiving streams is not supported")
     }
     
-    public func session(
+    nonisolated public func session(
         _ session: MCSession,
         didStartReceivingResourceWithName resourceName: String,
         fromPeer peerID: MCPeerID,
@@ -374,7 +392,7 @@ extension Model: MCSessionDelegate {
         print("Receiving resources is not supported")
     }
     
-    public func session(
+    nonisolated public func session(
         _ session: MCSession,
         didFinishReceivingResourceWithName resourceName: String,
         fromPeer peerID: MCPeerID,
@@ -382,5 +400,55 @@ extension Model: MCSessionDelegate {
         withError error: Error?
     ) {
         print("Receiving resources is not supported")
+    }
+}
+
+@MainActor
+private extension Model {
+    func foundPeer(_ peerID: MCPeerID) {
+        guard peerID != myPeerId else {
+            return
+        }
+        
+        guard !session.connectedPeers.contains(peerID) else {
+            return
+        }
+        
+        guard invitedPeers.insert(peerID).inserted else {
+            return
+        }
+        
+        print("ServiceBrowser found peer:", peerID)
+        
+        serviceBrowser.invitePeer(
+            peerID,
+            to: session,
+            withContext: nil,
+            timeout: 10
+        )
+    }
+    
+    func didChangePeerState(peerID: MCPeerID, state: MCSessionState) {
+        print("peer", peerID, "didChangeState:", state.rawValue)
+        
+        if state == .connected {
+            newConnection(peer: peerID)
+        }
+        
+        if state == .notConnected {
+            invitedPeers.remove(peerID)
+        }
+        
+        connectedPeers = session.connectedPeers
+    }
+    
+    func didReceiveData(_ data: Data, from peerID: MCPeerID) {
+        if let message = try? decoder.decode(ConnectMessage.self, from: data) {
+            reciveInfo(
+                info: message,
+                from: peerID,
+                size: data.count
+            )
+        }
     }
 }

@@ -27,7 +27,7 @@ struct ContentView: View {
                     if model.connectedPeers.isEmpty {
                         Text("No Peers")
                     } else {
-                        ForEach(model.connectedPeers, id: \.hash) {
+                        ForEach(model.connectedPeers, id: \.self) {
                             Text($0.displayName)
                         }
                     }
