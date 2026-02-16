@@ -106,9 +106,7 @@ final class Model: NSObject {
             $0.person.id == person.id
         }
         
-        guard let duoChat else {
-            return
-        }
+        guard let duoChat else { return }
         
         let peer = duoChat.chat.peer
         
@@ -126,28 +124,25 @@ final class Model: NSObject {
         let encryptedMessageData = crypto.encrypt(messageText, using: crypto.stringToPublicKey(crypto.publicKeyToString(crypto.receivedPublicKey!))!)
         let encryptedMessage = encryptedMessageData!.base64EncodedString()
         
-        main {
-            let newMessage = ConnectMessage(
-                messageType: .Message,
-                message: Message(
-                    text: encryptedMessage,
-                    from: self.myPerson
-                )
+        let newMessage = ConnectMessage(
+            messageType: .Message,
+            message: Message(
+                text: encryptedMessage,
+                from: self.myPerson
             )
-            
-            if !self.session.connectedPeers.isEmpty {
-                do {
-                    if let data = try? self.encoder.encode(newMessage) {
-                        if let index = self.chats.firstIndex(where: { $0.person.id == chat.person.id }) {
-                            main {
-                                self.chats[index].chat.messages.append(newMessage.message!)
-                            }
-                        }
-                        try self.session.send(data, toPeers: [chat.peer], with: .reliable)
+        )
+        
+        if !self.session.connectedPeers.isEmpty {
+            do {
+                if let data = try? self.encoder.encode(newMessage) {
+                    if let index = self.chats.firstIndex(where: { $0.person.id == chat.person.id }) {
+                        self.chats[index].chat.messages.append(newMessage.message!)
                     }
-                } catch {
-                    print("Error for sending:", error.localizedDescription)
+                    
+                    try self.session.send(data, toPeers: [chat.peer], with: .reliable)
                 }
+            } catch {
+                print("Error for sending:", error.localizedDescription)
             }
         }
     }
@@ -194,15 +189,11 @@ final class Model: NSObject {
     func deleteMessage(_ id: UUID, person: Person) {
         let index = chats.firstIndex(where: { $0.chat.messages.map(\.id).contains(id) })
         
-        guard let index else {
-            return
-        }
+        guard let index else { return }
         
         let msgIndex = chats[index].chat.messages.firstIndex(where: { $0.id == id })
         
-        guard let msgIndex else {
-            return
-        }
+        guard let msgIndex else { return }
         
         var updatedChat = chats[index]
         updatedChat.chat.messages.remove(at: msgIndex)
@@ -287,9 +278,7 @@ extension Model: MCNearbyServiceAdvertiserDelegate {
     ) {
         print("didReceiveInvitationFromPeer", peerId)
         
-        main {
-            invitationHandler(true, self.session)
-        }
+        invitationHandler(true, self.session)
     }
 }
 
@@ -325,20 +314,15 @@ extension Model: MCNearbyServiceBrowserDelegate {
     ) {
         print("ServiceBrowser found peer:", peerID)
         
-        main {
-            browser.invitePeer(
-                peerID,
-                to: self.session,
-                withContext: nil,
-                timeout: 10
-            )
-        }
+        browser.invitePeer(
+            peerID,
+            to: self.session,
+            withContext: nil,
+            timeout: 10
+        )
     }
     
-    func browser(
-        _ browser: MCNearbyServiceBrowser,
-        lostPeer peerID: MCPeerID
-    ) {
+    func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
         print("ServiceBrowser lost peer:", peerID)
     }
 }
@@ -351,13 +335,11 @@ extension Model: MCSessionDelegate {
     ) {
         print("peer", peerID, "didChangeState:", state.rawValue)
         
-        main {
-            if state == .connected {
-                self.newConnection(peer: peerID)
-            }
-            
-            self.connectedPeers = session.connectedPeers
+        if state == .connected {
+            self.newConnection(peer: peerID)
         }
+        
+        self.connectedPeers = session.connectedPeers
     }
     
     func session(
@@ -366,13 +348,11 @@ extension Model: MCSessionDelegate {
         fromPeer peerID: MCPeerID
     ) {
         if let message = try? decoder.decode(ConnectMessage.self, from: data) {
-            main {
-                self.reciveInfo(
-                    info: message,
-                    from: peerID,
-                    size: data.count
-                )
-            }
+            self.reciveInfo(
+                info: message,
+                from: peerID,
+                size: data.count
+            )
         }
     }
     

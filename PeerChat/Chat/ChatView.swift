@@ -32,14 +32,12 @@ struct ChatView: View {
                         }
                     }
                     .onChange(of: model.chats.first(where: { $0.person.id == person.id })?.chat.messages) {
-                        main {
-                            if let last = model.chats.first(where: { $0.person.id == person.id })?.chat.messages.last {
-                                withAnimation(.spring) {
-                                    scrollView.scrollTo(last.id)
-                                }
-                            } else {
-                                print("Scroll wasn't possible")
+                        if let last = model.chats.first(where: { $0.person.id == person.id })?.chat.messages.last {
+                            withAnimation(.spring) {
+                                scrollView.scrollTo(last.id)
                             }
+                        } else {
+                            print("Scroll wasn't possible")
                         }
                     }
                     
