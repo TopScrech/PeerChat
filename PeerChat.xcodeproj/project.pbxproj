@@ -24,6 +24,7 @@
 
 /* Begin PBXFileReference section */
 		40EBFCE22A16E82D0041012C /* PeerChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PeerChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3365B6A2F43D61A00824B1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -63,6 +64,7 @@
 		40EBFCD92A16E82D0041012C = {
 			isa = PBXGroup;
 			children = (
+				F3365B6A2F43D61A00824B1C /* README.md */,
 				F3365B4E2F43D4F300824B1C /* PeerChat */,
 				40EBFCE32A16E82D0041012C /* Products */,
 			);
