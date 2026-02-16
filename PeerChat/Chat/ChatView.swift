@@ -12,8 +12,6 @@ struct ChatView: View {
         self.person = person
     }
     
-    @State private var newMessage = ""
-    
     var body: some View {
         GeometryReader { geo in
             ScrollViewReader { scrollView in
@@ -23,8 +21,8 @@ struct ChatView: View {
                     ScrollView {
                         VStack(spacing: 4) {
                             if let chat = model.chats.first(where: { $0.person.id == person.id })?.chat {
-                                ForEach(chat.messages, id: \.id) { message in
-                                    MessageRow(message, person: person, geo: geo)
+                                ForEach(chat.messages, id: \.id) {
+                                    MessageRow($0, person: person, geo: geo)
                                         .environment(crypto)
                                         .padding(.horizontal)
                                 }
@@ -41,30 +39,7 @@ struct ChatView: View {
                         }
                     }
                     
-                    HStack {
-                        TextField("Enter a message", text: $newMessage)
-                            .onSubmit {
-                                sendMessage(scrollView)
-                                newMessage = ""
-                            }
-                            .textFieldStyle(.roundedBorder)
-                            .animation(.spring(), value: newMessage)
-                            .padding(.horizontal)
-                        
-                        if !newMessage.isEmpty {
-                            Button {
-                                sendMessage(scrollView)
-                                newMessage = ""
-                            } label: {
-                                Image(systemName: "arrow.up.circle.fill")
-                                    .bold()
-                                    .fontSize(24)
-                                    .foregroundColor(.blue)
-                            }
-                            .animation(.spring, value: newMessage)
-                        }
-                    }
-                    .padding()
+                    MessageComposer(person: person, proxy: scrollView)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
@@ -79,21 +54,6 @@ struct ChatView: View {
             Button("Disconnect") {
                 dismiss()
                 model.disconnectPeer(person.id)
-            }
-        }
-    }
-    
-    func sendMessage(_ proxy: ScrollViewProxy) {
-        if !newMessage.isEmpty {
-            if let index = model.chats.firstIndex(where: { $0.person.id == person.id }) {
-                model.send(newMessage, chat: model.chats[index].chat)
-                newMessage = ""
-                
-                if let last = model.chats[index].chat.messages.last {
-                    withAnimation(.spring) {
-                        proxy.scrollTo(last.id)
-                    }
-                }
             }
         }
     }
