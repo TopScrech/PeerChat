@@ -18,7 +18,7 @@ struct MessageComposer: View {
             TextField("Enter a message", text: $message)
                 .onSubmit(onSend)
                 .textFieldStyle(.roundedBorder)
-                .animation(.spring(), value: message)
+                .animation(.spring, value: message)
                 .padding(.horizontal)
             
             if !message.isEmpty {
