@@ -1,6 +1,6 @@
 import MultipeerConnectivity
 
-struct Person: Codable {
+struct Person: Codable, Equatable {
     let name: String
     let publicKey: String
     let id: UUID
