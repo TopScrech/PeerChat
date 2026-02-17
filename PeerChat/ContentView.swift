@@ -43,9 +43,14 @@ struct ContentView: View {
                 Button("Restart") {
                     model.restartConnections()
                 }
-                
-                NavigationLink("Settings") {
-                    SettingsView()
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        SettingsView()
+                    } label: {
+                        Label("Settings", systemImage: "gear")
+                    }
                 }
             }
         }
