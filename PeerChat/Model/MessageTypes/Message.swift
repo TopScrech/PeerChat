@@ -19,3 +19,10 @@ struct Message: Codable, Equatable {
         self.replyOnId = replyOnId
     }
 }
+
+extension Message {
+    static let preview = Message(
+        text: "Some message",
+        from: .preview
+    )
+}

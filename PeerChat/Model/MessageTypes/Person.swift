@@ -18,3 +18,16 @@ struct Person: Codable, Equatable {
         self.info = info
     }
 }
+
+extension Person {
+    private static let previewId = UUID(uuidString: "11111111-1111-1111-1111-111111111111") ?? UUID()
+    
+    static let preview = Person(
+        MCPeerID(displayName: "Preview Device"),
+        id: previewId,
+        publicKey: "1234567890",
+        info: [
+            "Status": "Available"
+        ]
+    )
+}

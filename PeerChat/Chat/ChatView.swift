@@ -68,7 +68,9 @@ struct ChatView: View {
 }
 
 #Preview {
-    ChatView(.init(.init(displayName: "Preview"), id: UUID(), publicKey: "1234567890", info: ["Test": "Test"]))
-        .environment(Model(CryptoModel()))
-        .environment(CryptoModel())
+    let crypto = CryptoModel.preview
+    
+    ChatView(.preview)
+        .environment(Model.preview(crypto))
+        .environment(crypto)
 }

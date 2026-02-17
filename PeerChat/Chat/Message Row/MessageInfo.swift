@@ -22,15 +22,5 @@ struct MessageInfo: View {
 }
 
 #Preview {
-    MessageInfo(
-        Message(
-            text: "Some message",
-            from: Person(
-                .init(displayName: "Preview Device"),
-                id: UUID(),
-                publicKey: "1234567890",
-                info: [:]
-            )
-        )
-    )
+    MessageInfo(.preview)
 }

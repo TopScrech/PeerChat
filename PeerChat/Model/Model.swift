@@ -496,3 +496,15 @@ private extension Model {
         }
     }
 }
+
+extension Model {
+    static func preview(_ crypto: CryptoModel = .preview) -> Model {
+        Model(crypto)
+    }
+}
+
+extension CryptoModel {
+    static var preview: CryptoModel {
+        CryptoModel()
+    }
+}
