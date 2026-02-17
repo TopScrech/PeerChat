@@ -40,9 +40,9 @@ struct ContentView: View {
                     }
                 }
                 
-                Button("Restart") {
-                    model.restartConnections()
-                }
+            }
+            .refreshable {
+                model.restartConnections()
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
