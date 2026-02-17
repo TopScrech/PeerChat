@@ -10,17 +10,13 @@ struct MessageRow: View {
     private let person: Person
     private let geo: GeometryProxy
     
-    init(
-        _ message: Message,
-        person: Person,
-        geo: GeometryProxy
-    ) {
+    init(_ message: Message, person: Person, geo: GeometryProxy) {
         self.message = message
         self.person = person
         self.geo = geo
     }
     
-    var isCurrentUser: Bool {
+    private var isCurrentUser: Bool {
         message.from.id == model.myPerson.id
     }
     
@@ -74,8 +70,10 @@ struct MessageRow: View {
                 MessageInfo(message)
             }
             
-            Button("Delete", role: .destructive) {
-                model.deleteMessage(message.id, person: person)
+            if isCurrentUser {
+                Button("Delete", role: .destructive) {
+                    model.deleteMessage(message.id, person: person)
+                }
             }
         }
     }

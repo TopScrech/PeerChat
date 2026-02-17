@@ -191,41 +191,56 @@ final class Model: NSObject {
             handleCloseChat(from: from)
             
         case .DeleteMessage:
-            print("From MCPeerID:", from.displayName)
-            print("Available chats:", chats)
-            print("DeleteMessage content:", String(describing: info.deleteMessage))
-            
-            if let personKey = chats.first(where: { $0.chat.peer == from })?.person,
-               let message = info.deleteMessage {
-                let idToDelete = message.idToDelete
-                
-                print("Delete message", idToDelete.description)
-                
-                deleteMessage(idToDelete, person: personKey)
-                
-            } else {
-                print("Could not delete message")
+            guard let person = chats.first(where: { $0.chat.peer == from })?.person else {
+                print("Ignoring delete request from unknown peer:", from.displayName)
+                return
             }
+            
+            guard let deletePayload = info.deleteMessage else {
+                print("Missing delete message payload")
+                return
+            }
+            
+            deleteMessage(
+                deletePayload.idToDelete,
+                person: person,
+                initiatedByLocalUser: false
+            )
         }
     }
     
-    func deleteMessage(_ id: UUID, person: Person) {
-        let index = chats.firstIndex(where: { $0.chat.messages.map(\.id).contains(id) })
-        
-        guard let index else { return }
-        
-        let msgIndex = chats[index].chat.messages.firstIndex(where: { $0.id == id })
-        
-        guard let msgIndex else { return }
-        
-        var updatedChat = chats[index]
-        updatedChat.chat.messages.remove(at: msgIndex)
-        
-        withAnimation {
-            chats[index] = updatedChat
+    func deleteMessage(
+        _ id: UUID,
+        person: Person,
+        initiatedByLocalUser: Bool = true
+    ) {
+        guard let chatIndex = chats.firstIndex(where: { $0.person.id == person.id }) else {
+            return
         }
         
-        sendDeleteRequest(id, to: person)
+        guard let messageIndex = chats[chatIndex].chat.messages.firstIndex(where: { $0.id == id }) else {
+            return
+        }
+        
+        let message = chats[chatIndex].chat.messages[messageIndex]
+        let isAuthorizedDelete = if initiatedByLocalUser {
+            message.from.id == myPerson.id
+        } else {
+            message.from.id == person.id
+        }
+        
+        guard isAuthorizedDelete else {
+            print("Unauthorized delete request for message:", id)
+            return
+        }
+        
+        _ = withAnimation {
+            chats[chatIndex].chat.messages.remove(at: messageIndex)
+        }
+        
+        if initiatedByLocalUser {
+            sendDeleteRequest(id, to: person)
+        }
     }
     
     func handleCloseChat(from peer: MCPeerID) {
@@ -262,7 +277,23 @@ final class Model: NSObject {
     }
     
     func newPerson(person: Person, from: MCPeerID) {
-        if chats.contains(where: { $0.person.id == person.id }) {
+        if let index = chats.firstIndex(where: { $0.chat.peer == from }) {
+            chats[index].person = person
+            chats[index].chat.person = person
+            return
+        }
+        
+        if let existingIndex = chats.firstIndex(where: { $0.person.id == person.id }) {
+            let existingPeer = chats[existingIndex].chat.peer
+            
+            guard !session.connectedPeers.contains(existingPeer) else {
+                print("Rejecting duplicate identity from a different connected peer")
+                return
+            }
+            
+            chats[existingIndex].person = person
+            chats[existingIndex].chat.peer = from
+            chats[existingIndex].chat.person = person
             return
         }
         
@@ -277,15 +308,23 @@ final class Model: NSObject {
         from: MCPeerID,
         size: Int
     ) {
+        guard let chatIndex = chats.firstIndex(where: { $0.chat.peer == from }) else {
+            print("Ignoring message from unknown peer:", from.displayName)
+            return
+        }
+        
+        guard chats[chatIndex].person.id == message.from.id else {
+            print("Rejecting message with mismatched sender identity from:", from.displayName)
+            return
+        }
+        
         let timeInterval = max(Date().timeIntervalSince(message.date), 0.001)
         let speed = Double(size) / timeInterval / 1024
         
         print("New Message:", message.text)
         print("Speed: \(Int(speed)) KB/s")
         
-        if let index = chats.firstIndex(where: { $0.person.id == message.from.id }) {
-            chats[index].chat.messages.append(message)
-        }
+        chats[chatIndex].chat.messages.append(message)
     }
 }
 
@@ -443,6 +482,11 @@ private extension Model {
     }
     
     func didReceiveData(_ data: Data, from peerID: MCPeerID) {
+        guard session.connectedPeers.contains(peerID) else {
+            print("Ignoring data from disconnected peer:", peerID.displayName)
+            return
+        }
+        
         if let message = try? decoder.decode(ConnectMessage.self, from: data) {
             reciveInfo(
                 info: message,
