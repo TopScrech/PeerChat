@@ -12,12 +12,18 @@ struct ChatView: View {
         self.person = person
     }
     
+    private var peerStatus: String? {
+        if let status = person.info?["Status"], !status.isEmpty {
+            return status
+        }
+        
+        return nil
+    }
+    
     var body: some View {
         GeometryReader { geo in
             ScrollViewReader { scrollView in
                 VStack {
-                    Text(person.info?.description ?? "No info")
-                    
                     ScrollView {
                         VStack(spacing: 4) {
                             if let chat = model.chats.first(where: { $0.person.id == person.id })?.chat {
@@ -47,7 +53,9 @@ struct ChatView: View {
         .task {
             crypto.receivedPublicKey = crypto.stringToPublicKey(person.publicKey)
         }
-        .onChange(of: model.changeState) { _, _ in
+        .navigationTitle(person.name)
+        .navSubtitle(peerStatus ?? "")
+        .onChange(of: model.changeState) {
             dismiss()
         }
         .toolbar {

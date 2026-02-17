@@ -17,7 +17,6 @@ struct ContentView: View {
                                 ChatView(duoChat.person)
                                     .environment(model)
                                     .environment(crypto)
-                                    .navigationTitle(duoChat.person.name)
                             }
                         }
                     }
