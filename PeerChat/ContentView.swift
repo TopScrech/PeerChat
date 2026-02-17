@@ -39,7 +39,6 @@ struct ContentView: View {
                         ProgressView()
                     }
                 }
-                
             }
             .refreshable {
                 model.restartConnections()
