@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		F311887A2BF90FBF0079A5FE /* ScrechKit in Frameworks */ = {isa = PBXBuildFile; productRef = F31188792BF90FBF0079A5FE /* ScrechKit */; };
 		F36ACB3A2BF9E00A00B5744A /* Swifto Crypto in Frameworks */ = {isa = PBXBuildFile; productRef = F36ACB392BF9E00A00B5744A /* Swifto Crypto */; };
+		F3D854942F44DCB900B2A3F7 /* DeviceKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3D854932F44DCB900B2A3F7 /* DeviceKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -56,6 +57,7 @@
 			files = (
 				F36ACB3A2BF9E00A00B5744A /* Swifto Crypto in Frameworks */,
 				F311887A2BF90FBF0079A5FE /* ScrechKit in Frameworks */,
+				F3D854942F44DCB900B2A3F7 /* DeviceKit in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 			packageProductDependencies = (
 				F31188792BF90FBF0079A5FE /* ScrechKit */,
 				F36ACB392BF9E00A00B5744A /* Swifto Crypto */,
+				F3D854932F44DCB900B2A3F7 /* DeviceKit */,
 			);
 			productName = PeerSotial;
 			productReference = 40EBFCE22A16E82D0041012C /* PeerChat.app */;
@@ -130,6 +133,7 @@
 			packageReferences = (
 				F31188782BF90FBF0079A5FE /* XCRemoteSwiftPackageReference "ScrechKit" */,
 				F36ACB382BF9E00A00B5744A /* XCRemoteSwiftPackageReference "Swifto-Crypto" */,
+				F3D854922F44DCB900B2A3F7 /* XCRemoteSwiftPackageReference "DeviceKit" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 40EBFCE32A16E82D0041012C /* Products */;
@@ -376,6 +380,14 @@
 				kind = branch;
 			};
 		};
+		F3D854922F44DCB900B2A3F7 /* XCRemoteSwiftPackageReference "DeviceKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/devicekit/DeviceKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -388,6 +400,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F36ACB382BF9E00A00B5744A /* XCRemoteSwiftPackageReference "Swifto-Crypto" */;
 			productName = "Swifto Crypto";
+		};
+		F3D854932F44DCB900B2A3F7 /* DeviceKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F3D854922F44DCB900B2A3F7 /* XCRemoteSwiftPackageReference "DeviceKit" */;
+			productName = DeviceKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
