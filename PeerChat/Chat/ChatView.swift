@@ -59,9 +59,15 @@ struct ChatView: View {
             dismiss()
         }
         .toolbar {
-            Button("Disconnect") {
-                dismiss()
-                model.disconnectPeer(person.id)
+            ToolbarItem(placement: .topBarTrailing) {
+                Menu {
+                    Button("Disconnect", role: .destructive) {
+                        dismiss()
+                        model.disconnectPeer(person.id)
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
+                }
             }
         }
     }
