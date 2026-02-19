@@ -22,10 +22,7 @@ struct FileMessageBubble: View {
                 HStack(spacing: 12) {
                     Button("Open", systemImage: "doc.text.magnifyingglass", action: openPreview)
                     
-                    ShareLink(
-                        item: fileData,
-                        preview: SharePreview(fileName ?? "File")
-                    ) {
+                    ShareLink(item: fileData, preview: SharePreview(fileName ?? "File")) {
                         Label("Save", systemImage: "square.and.arrow.down")
                     }
                 }
