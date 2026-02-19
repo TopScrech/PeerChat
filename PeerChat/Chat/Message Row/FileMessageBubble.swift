@@ -6,8 +6,7 @@ struct FileMessageBubble: View {
     let fileData: Data?
     let isCurrentUser: Bool
     
-    @State private var isShowingPreview = false
-    @State private var previewFileURL: URL?
+    @State private var previewItem: QuickLookPreview?
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -42,14 +41,10 @@ struct FileMessageBubble: View {
             in: .rect(cornerRadius: 20, style: .continuous)
         )
         .sheet(
-            isPresented: $isShowingPreview,
+            item: $previewItem,
             onDismiss: cleanupPreviewFile
         ) {
-            if let previewFileURL {
-                QuickLookView(previewFileURL)
-            } else {
-                Text("Preview unavailable")
-            }
+            QuickLookView($0.url)
         }
     }
     
@@ -72,20 +67,19 @@ struct FileMessageBubble: View {
             let url = previewDirectory.appendingPathComponent(previewName)
             
             try fileData.write(to: url, options: .atomic)
-            previewFileURL = url
-            isShowingPreview = true
+            previewItem = .init(url: url)
         } catch {
             print("Could not prepare Quick Look preview")
         }
     }
     
     private func cleanupPreviewFile() {
-        guard let previewFileURL else {
+        guard let previewItem else {
             return
         }
         
-        try? FileManager.default.removeItem(at: previewFileURL)
-        self.previewFileURL = nil
+        try? FileManager.default.removeItem(at: previewItem.url)
+        self.previewItem = nil
     }
     
     private var sanitizedFileName: String {
@@ -96,4 +90,10 @@ struct FileMessageBubble: View {
             with: "-"
         )
     }
+}
+
+private struct QuickLookPreview: Identifiable {
+    let url: URL
+    
+    var id: URL { url }
 }

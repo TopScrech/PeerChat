@@ -27,8 +27,8 @@ struct ContentView: View {
                 
                 if !model.incomingChatPeers.isEmpty {
                     Section("Incoming Chat Requests") {
-                        ForEach(model.incomingChatPeers, id: \.self) { peer in
-                            IncomingChatRequestRowView(peer: peer)
+                        ForEach(model.incomingChatPeers, id: \.self) {
+                            IncomingChatRequestRowView(peer: $0)
                         }
                     }
                 }
@@ -37,16 +37,14 @@ struct ContentView: View {
                     if model.connectedPeers.isEmpty {
                         Text("No Peers")
                     } else {
-                        ForEach(model.connectedPeers, id: \.self) { peer in
-                            ConnectedPeerRowView(peer: peer)
+                        ForEach(model.connectedPeers, id: \.self) {
+                            ConnectedPeerRowView(peer: $0)
                         }
                     }
                 } header: {
                     HStack {
                         Text("Near-By Peers")
-                        
                         Spacer()
-                        
                         ProgressView()
                     }
                 }
