@@ -6,6 +6,7 @@ Peer-to-Peer messenger written in SwiftUI, using [Multipeer Connectivity](https:
 
 ## Supported platforms
 - iOS/iPadOS 17+
+- macOS 14+
 
 ## Featues
 - No Wi-Fi needed
