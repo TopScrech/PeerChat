@@ -1,4 +1,3 @@
-import SwiftUI
 import ScrechKit
 import SwiftoCrypto
 
@@ -19,7 +18,7 @@ struct MessageRow: View {
     private var isCurrentUser: Bool {
         message.from.id == model.myPerson.id
     }
-
+    
     private var canDelete: Bool {
         return true
     }
@@ -81,11 +80,7 @@ struct MessageRow: View {
     }
     
     private var fileSize: String? {
-        guard message.contentType == .file else {
-            return nil
-        }
-        
-        guard let decryptedAttachmentData else {
+        guard message.contentType == .file, let decryptedAttachmentData else {
             return nil
         }
         

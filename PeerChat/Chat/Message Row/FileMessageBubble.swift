@@ -1,8 +1,5 @@
-import SwiftUI
 import ScrechKit
-#if os(macOS)
-import AppKit
-#else
+#if canImport(QuickLooking)
 import QuickLooking
 #endif
 
@@ -14,15 +11,15 @@ struct FileMessageBubble: View {
     var onDelete: (() -> Void)?
     
     @State private var preparedFile: PreparedAttachmentFile?
-#if !os(macOS)
+    
+#if canImport(QuickLooking)
     @State private var previewItem: QuickLookPreview?
 #endif
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Label(fileName ?? "File", systemImage: "doc.fill")
                 .callout(.semibold)
-
+            
             if fileData == nil {
                 Text("File unavailable")
                     .callout()
@@ -53,7 +50,7 @@ struct FileMessageBubble: View {
             prepareFile()
         }
         .onDisappear(perform: cleanupPreparedFile)
-#if !os(macOS)
+#if canImport(QuickLooking)
         .sheet(item: $previewItem) { preview in
             NavigationStack {
                 QuickLookView(preview.url)
@@ -68,7 +65,7 @@ struct FileMessageBubble: View {
                                 Label("Save", systemImage: "square.and.arrow.up")
                             }
                         }
-
+                        
                         if canDelete, let onDelete {
                             Button("Delete", systemImage: "trash", role: .destructive) {
                                 previewItem = nil
@@ -86,10 +83,7 @@ struct FileMessageBubble: View {
             prepareFile()
         }
         
-        guard let preparedFile else {
-            return
-        }
-        
+        guard let preparedFile else { return }
 #if os(macOS)
         NSWorkspace.shared.open(preparedFile.url)
 #else
@@ -123,7 +117,7 @@ struct FileMessageBubble: View {
     }
     
     private func cleanupPreviewState() {
-#if !os(macOS)
+#if canImport(QuickLooking)
         self.previewItem = nil
 #endif
     }

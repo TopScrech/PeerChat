@@ -1,4 +1,3 @@
-import SwiftUI
 import ScrechKit
 import AVFoundation
 
@@ -13,11 +12,9 @@ struct VoiceMessageBubble: View {
     
     var body: some View {
         HStack(spacing: 8) {
-            Button(isPlaying ? "Stop" : "Play", systemImage: isPlaying ? "stop.fill" : "play.fill") {
-                togglePlayback()
-            }
-            .buttonStyle(.plain)
-            .disabled(audioData == nil)
+            Button(isPlaying ? "Stop" : "Play", systemImage: isPlaying ? "stop.fill" : "play.fill", action: togglePlayback)
+                .buttonStyle(.plain)
+                .disabled(audioData == nil)
             
             Text(durationText)
                 .monospacedDigit()
@@ -46,9 +43,7 @@ struct VoiceMessageBubble: View {
             return
         }
         
-        guard let audioData else {
-            return
-        }
+        guard let audioData else { return }
         
         do {
             let newPlayer = try AVAudioPlayer(data: audioData)
@@ -59,9 +54,11 @@ struct VoiceMessageBubble: View {
             
             let durationInNanoseconds = UInt64(max(newPlayer.duration, 0) * 1_000_000_000)
             playbackTask?.cancel()
+            
             playbackTask = Task {
                 try? await Task.sleep(nanoseconds: durationInNanoseconds)
                 guard !Task.isCancelled else { return }
+                
                 await MainActor.run {
                     isPlaying = false
                     player = nil
