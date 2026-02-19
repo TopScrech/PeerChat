@@ -2,9 +2,11 @@ import SwiftUI
 
 struct MessageInfo: View {
     private var message: Message
+    private let fileSize: String?
     
-    init(_ message: Message) {
+    init(_ message: Message, fileSize: String? = nil) {
         self.message = message
+        self.fileSize = fileSize
     }
     
     var body: some View {
@@ -18,6 +20,10 @@ struct MessageInfo: View {
             
             if let attachmentName = message.attachmentName {
                 LabeledContent("Attachment", value: attachmentName)
+            }
+            
+            if message.contentType == .file, let fileSize {
+                LabeledContent("File Size", value: fileSize)
             }
             
             LabeledContent {

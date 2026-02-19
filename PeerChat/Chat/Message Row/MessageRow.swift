@@ -58,7 +58,7 @@ struct MessageRow: View {
             }
             
             NavigationLink("Info") {
-                MessageInfo(message)
+                MessageInfo(message, fileSize: fileSize)
             }
             
             if isCurrentUser {
@@ -67,6 +67,37 @@ struct MessageRow: View {
                 }
             }
         }
+    }
+    
+    private var fileSize: String? {
+        guard message.contentType == .file else {
+            return nil
+        }
+        
+        guard let decryptedAttachmentData else {
+            return nil
+        }
+        
+        return ByteCountFormatStyle().format(Int64(decryptedAttachmentData.count))
+    }
+    
+    private var decryptedAttachmentData: Data? {
+        guard let encryptedAttachment = message.attachmentData else {
+            return nil
+        }
+        
+        if let attachmentData = model.crypto.decryptAttachment(encryptedAttachment) {
+            return attachmentData
+        }
+        
+        guard let legacyAttachmentString = model.crypto.decrypt(
+            encryptedAttachment,
+            using: model.crypto.privateKey
+        ) else {
+            return nil
+        }
+        
+        return Data(base64Encoded: legacyAttachmentString)
     }
 }
 
