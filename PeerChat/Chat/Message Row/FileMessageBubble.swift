@@ -50,7 +50,7 @@ struct FileMessageBubble: View {
             prepareFile()
         }
         .onDisappear(perform: cleanupPreparedFile)
-#if canImport(QuickLooking)
+#if !os(macOS)
         .sheet(item: $previewItem) { preview in
             NavigationStack {
                 QuickLookView(preview.url)
