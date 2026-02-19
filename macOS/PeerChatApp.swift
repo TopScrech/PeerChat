@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct macOSApp: App {
+struct PeerChatApp: App {
     @StateObject private var store = ValueStore()
     
     var body: some Scene {
