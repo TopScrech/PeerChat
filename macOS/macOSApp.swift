@@ -1,10 +1,3 @@
-//
-//  macOSApp.swift
-//  macOS
-//
-//  Created by Sergei Saliukov on 19.02.2026.
-//
-
 import SwiftUI
 
 @main
