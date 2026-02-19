@@ -15,12 +15,14 @@ struct ConnectedPeerRowView: View {
                 Button("Open", systemImage: "bubble.left.and.bubble.right") {
                     model.openChat(with: peer)
                 }
+                
             } else if model.hasPendingOutgoingChatRequest(to: peer) {
                 Label("Requested", systemImage: "clock")
-                    .foregroundStyle(.secondary)
+                    .secondary()
+                
             } else if model.hasIncomingChatRequest(from: peer) {
                 Label("Awaiting response", systemImage: "questionmark.bubble")
-                    .foregroundStyle(.secondary)
+                    .secondary()
             } else {
                 Button("Request", systemImage: "paperplane") {
                     model.requestChat(with: peer)

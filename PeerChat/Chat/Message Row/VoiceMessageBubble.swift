@@ -20,7 +20,7 @@ struct VoiceMessageBubble: View {
             
             Text(durationText)
                 .monospacedDigit()
-                .font(.callout)
+                .callout()
         }
         .foregroundStyle(isCurrentUser ? .white : .primary)
         .padding(.horizontal)

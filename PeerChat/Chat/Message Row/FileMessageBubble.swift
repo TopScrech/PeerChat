@@ -12,11 +12,11 @@ struct FileMessageBubble: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Label(fileName ?? "File", systemImage: "doc.fill")
-                .font(.callout.weight(.semibold))
+                .callout(.semibold)
             
             if let fileData {
                 Text(ByteCountFormatStyle().format(Int64(fileData.count)))
-                    .font(.caption)
+                    .caption()
                     .foregroundStyle(isCurrentUser ? .white.opacity(0.9) : .secondary)
                 
                 HStack(spacing: 12) {
@@ -29,11 +29,11 @@ struct FileMessageBubble: View {
                         Label("Save", systemImage: "square.and.arrow.down")
                     }
                 }
-                .font(.callout)
+                .callout()
                 .foregroundStyle(isCurrentUser ? .white : .blue)
             } else {
                 Text("File unavailable")
-                    .font(.caption)
+                    .callout()
                     .foregroundStyle(isCurrentUser ? .white.opacity(0.9) : .secondary)
             }
         }

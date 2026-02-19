@@ -31,7 +31,7 @@ struct MessageRow: View {
                 
                 Text(message.date, format: .dateTime)
                     .multilineTextAlignment(isCurrentUser ? .trailing : .leading)
-                    .foregroundStyle(.secondary)
+                    .secondary()
                     .footnote()
             }
             

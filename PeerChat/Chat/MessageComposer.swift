@@ -26,8 +26,8 @@ struct MessageComposer: View {
         HStack {
             Button("Attach", systemImage: "paperclip", action: onPickFile)
                 .labelStyle(.iconOnly)
-                .font(.title2)
-                .foregroundStyle(.secondary)
+                .title2()
+                .secondary()
             
             TextField("Enter a message", text: $message)
                 .onSubmit(onSend)
@@ -36,14 +36,13 @@ struct MessageComposer: View {
             
             Button(isRecording ? "Stop Recording" : "Record Voice", systemImage: isRecording ? "stop.circle.fill" : "mic.circle.fill", action: onRecordTapped)
                 .labelStyle(.iconOnly)
-                .font(.title2)
+                .title2()
                 .foregroundStyle(isRecording ? .red : .secondary)
             
             if !message.isEmpty {
                 Button("Send", systemImage: "arrow.up.circle.fill", action: onSend)
                     .labelStyle(.iconOnly)
-                    .bold()
-                    .font(.title)
+                    .title(.bold)
                     .foregroundStyle(.blue)
                     .animation(.spring, value: message)
             }

@@ -22,7 +22,7 @@ struct MessageContentView: View {
                         )
                 } else {
                     Text(decryptedText.trimmingCharacters(in: .whitespacesAndNewlines))
-                        .font(.largeTitle)
+                        .largeTitle()
                         .multilineTextAlignment(isCurrentUser ? .trailing : .leading)
                         .padding()
                 }
