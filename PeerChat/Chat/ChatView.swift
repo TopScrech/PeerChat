@@ -59,6 +59,18 @@ struct ChatView: View {
             dismiss()
         }
         .toolbar {
+            #if os(macOS)
+            ToolbarItem {
+                Menu {
+                    Button("Disconnect", role: .destructive) {
+                        dismiss()
+                        model.disconnectPeer(person.id)
+                    }
+                } label: {
+                    Image(systemName: "ellipsis")
+                }
+            }
+            #else
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Button("Disconnect", role: .destructive) {
@@ -69,6 +81,7 @@ struct ChatView: View {
                     Image(systemName: "ellipsis")
                 }
             }
+            #endif
         }
     }
 }

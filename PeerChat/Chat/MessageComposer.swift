@@ -95,9 +95,11 @@ struct MessageComposer: View {
         }
         
         do {
+            #if os(iOS)
             let session = AVAudioSession.sharedInstance()
             try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .allowBluetoothHFP])
             try session.setActive(true)
+            #endif
             
             let url = FileManager.default
                 .temporaryDirectory
@@ -174,9 +176,15 @@ struct MessageComposer: View {
     
     private func requestMicrophoneAccess() async -> Bool {
         await withCheckedContinuation { continuation in
+            #if os(macOS)
+            AVCaptureDevice.requestAccess(for: .audio) {
+                continuation.resume(returning: $0)
+            }
+            #else
             AVAudioApplication.requestRecordPermission {
                 continuation.resume(returning: $0)
             }
+            #endif
         }
     }
     

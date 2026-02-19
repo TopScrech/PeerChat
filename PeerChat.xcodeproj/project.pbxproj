@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		F311887A2BF90FBF0079A5FE /* ScrechKit in Frameworks */ = {isa = PBXBuildFile; productRef = F31188792BF90FBF0079A5FE /* ScrechKit */; };
 		F366E1542F470866000F8F30 /* QuickLooking in Frameworks */ = {isa = PBXBuildFile; productRef = F366E1532F470866000F8F30 /* QuickLooking */; };
+		F36700012F47990000F8F30 /* ScrechKit in Frameworks */ = {isa = PBXBuildFile; productRef = F31188792BF90FBF0079A5FE /* ScrechKit */; };
+		F36700022F47990000F8F30 /* QuickLooking in Frameworks */ = {isa = PBXBuildFile; productRef = F366E1532F470866000F8F30 /* QuickLooking */; };
+		F36700032F47990000F8F30 /* Swifto Crypto in Frameworks */ = {isa = PBXBuildFile; productRef = F36ACB392BF9E00A00B5744A /* Swifto Crypto */; };
+		F36700042F47990000F8F30 /* DeviceKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3D854932F44DCB900B2A3F7 /* DeviceKit */; };
 		F36ACB3A2BF9E00A00B5744A /* Swifto Crypto in Frameworks */ = {isa = PBXBuildFile; productRef = F36ACB392BF9E00A00B5744A /* Swifto Crypto */; };
 		F3D854942F44DCB900B2A3F7 /* DeviceKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3D854932F44DCB900B2A3F7 /* DeviceKit */; };
 /* End PBXBuildFile section */
@@ -27,6 +31,7 @@
 /* Begin PBXFileReference section */
 		40EBFCE22A16E82D0041012C /* PeerChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PeerChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3365B6A2F43D61A00824B1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		F366E1612F47610E000F8F30 /* macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3D854952F4508DE00B2A3F7 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -40,6 +45,17 @@
 			);
 			target = 40EBFCE12A16E82D0041012C /* PeerChat */;
 		};
+		F36700052F47990000F8F30 /* Exceptions for "PeerChat" folder in "macOS" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Assets.xcassets,
+				Info.plist,
+				Model/CryptoConvert.swift,
+				Model/CryptoModel.swift,
+				Nav/PeerChatApp.swift,
+			);
+			target = F366E1602F47610E000F8F30 /* macOS */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -47,8 +63,14 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				F3365B692F43D4F300824B1C /* Exceptions for "PeerChat" folder in "PeerChat" target */,
+				F36700052F47990000F8F30 /* Exceptions for "PeerChat" folder in "macOS" target */,
 			);
 			path = PeerChat;
+			sourceTree = "<group>";
+		};
+		F366E1622F47610E000F8F30 /* macOS */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = macOS;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -63,6 +85,15 @@
 				F3D854942F44DCB900B2A3F7 /* DeviceKit in Frameworks */,
 			);
 		};
+		F366E15E2F47610E000F8F30 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				F36700022F47990000F8F30 /* QuickLooking in Frameworks */,
+				F36700032F47990000F8F30 /* Swifto Crypto in Frameworks */,
+				F36700012F47990000F8F30 /* ScrechKit in Frameworks */,
+				F36700042F47990000F8F30 /* DeviceKit in Frameworks */,
+			);
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -72,6 +103,7 @@
 				F3365B6A2F43D61A00824B1C /* README.md */,
 				F3D854952F4508DE00B2A3F7 /* LICENSE */,
 				F3365B4E2F43D4F300824B1C /* PeerChat */,
+				F366E1622F47610E000F8F30 /* macOS */,
 				40EBFCE32A16E82D0041012C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -80,6 +112,7 @@
 			isa = PBXGroup;
 			children = (
 				40EBFCE22A16E82D0041012C /* PeerChat.app */,
+				F366E1612F47610E000F8F30 /* macOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -112,6 +145,31 @@
 			productReference = 40EBFCE22A16E82D0041012C /* PeerChat.app */;
 			productType = "com.apple.product-type.application";
 		};
+		F366E1602F47610E000F8F30 /* macOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F366E1692F47610F000F8F30 /* Build configuration list for PBXNativeTarget "macOS" */;
+			buildPhases = (
+				F366E15D2F47610E000F8F30 /* Sources */,
+				F366E15E2F47610E000F8F30 /* Frameworks */,
+				F366E15F2F47610E000F8F30 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				F3365B4E2F43D4F300824B1C /* PeerChat */,
+				F366E1622F47610E000F8F30 /* macOS */,
+			);
+			name = macOS;
+			packageProductDependencies = (
+				F31188792BF90FBF0079A5FE /* ScrechKit */,
+				F36ACB392BF9E00A00B5744A /* Swifto Crypto */,
+				F3D854932F44DCB900B2A3F7 /* DeviceKit */,
+				F366E1532F470866000F8F30 /* QuickLooking */,
+			);
+			productName = macOS;
+			productReference = F366E1612F47610E000F8F30 /* macOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -119,11 +177,14 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1420;
+				LastSwiftUpdateCheck = 2630;
 				LastUpgradeCheck = 2630;
 				TargetAttributes = {
 					40EBFCE12A16E82D0041012C = {
 						CreatedOnToolsVersion = 14.2;
+					};
+					F366E1602F47610E000F8F30 = {
+						CreatedOnToolsVersion = 26.3;
 					};
 				};
 			};
@@ -147,6 +208,7 @@
 			projectRoot = "";
 			targets = (
 				40EBFCE12A16E82D0041012C /* PeerChat */,
+				F366E1602F47610E000F8F30 /* macOS */,
 			);
 		};
 /* End PBXProject section */
@@ -157,10 +219,20 @@
 			files = (
 			);
 		};
+		F366E15F2F47610E000F8F30 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		40EBFCDE2A16E82D0041012C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		F366E15D2F47610E000F8F30 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
 			);
@@ -348,6 +420,95 @@
 			};
 			name = Release;
 		};
+		F366E16A2F47610F000F8F30 /* Debug configuration for PBXNativeTarget "macOS" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = 8FQUA2F388;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_AUDIO_INPUT = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSBonjourServices = "_PeerChat._tcp _PeerChat._udp";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Multipeer Connectivity";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record and send voice messages";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.topscrech.PeerChat;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+		F366E16B2F47610F000F8F30 /* Release configuration for PBXNativeTarget "macOS" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = 8FQUA2F388;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_AUDIO_INPUT = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSBonjourServices = "_PeerChat._tcp _PeerChat._udp";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Multipeer Connectivity";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record and send voice messages";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.topscrech.PeerChat;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -364,6 +525,14 @@
 			buildConfigurations = (
 				40EBFCF12A16E82F0041012C /* Debug configuration for PBXNativeTarget "PeerChat" */,
 				40EBFCF22A16E82F0041012C /* Release configuration for PBXNativeTarget "PeerChat" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		F366E1692F47610F000F8F30 /* Build configuration list for PBXNativeTarget "macOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F366E16A2F47610F000F8F30 /* Debug configuration for PBXNativeTarget "macOS" */,
+				F366E16B2F47610F000F8F30 /* Release configuration for PBXNativeTarget "macOS" */,
 			);
 			defaultConfigurationName = Release;
 		};

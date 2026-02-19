@@ -77,6 +77,15 @@ struct ContentView: View {
                 model.restartConnections()
             }
             .toolbar {
+                #if os(macOS)
+                ToolbarItem {
+                    NavigationLink {
+                        SettingsView()
+                    } label: {
+                        Label("Settings", systemImage: "gear")
+                    }
+                }
+                #else
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink {
                         SettingsView()
@@ -84,6 +93,7 @@ struct ContentView: View {
                         Label("Settings", systemImage: "gear")
                     }
                 }
+                #endif
             }
         }
     }

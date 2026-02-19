@@ -1,4 +1,5 @@
 import SwiftUI
+import ScrechKit
 import SwiftoCrypto
 
 struct MessageContentView: View {

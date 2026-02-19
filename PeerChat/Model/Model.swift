@@ -45,7 +45,7 @@ final class Model: NSObject {
             serviceType: serviceType
         )
         
-        let deviceId = UIDevice.current.identifierForVendor ?? UUID()
+        let deviceId = ValueStore().deviceID
         
         myPerson = Person(
             session.myPeerID,
