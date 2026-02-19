@@ -17,28 +17,34 @@ final class ValueStore: ObservableObject {
         
         let newID = ValueStore.defaultDeviceID
         storedDeviceID = newID.uuidString
+        
         return newID
     }
     
+    func resetNickname() {
+        nickname = ValueStore.defaultNickname
+    }
+    
     private static var defaultNickname: String {
-        if let name = Device.current.name, !name.isEmpty {
+        let name = Device.current.description
+        
+        if !name.isEmpty {
             return name
         }
-        
-        #if os(iOS)
+#if os(iOS)
         return UIDevice.current.model
-        #elseif os(macOS)
+#elseif os(macOS)
         return Host.current().localizedName ?? "Mac"
-        #else
+#else
         return "Device"
-        #endif
+#endif
     }
     
     private static var defaultDeviceID: UUID {
-        #if os(iOS)
+#if os(iOS)
         return UIDevice.current.identifierForVendor ?? UUID()
-        #else
+#else
         return UUID()
-        #endif
+#endif
     }
 }

@@ -6,6 +6,7 @@ struct SettingsView: View {
     var body: some View {
         List {
             TextField("Nickname", text: $store.nickname)
+            Button("Reset Name", systemImage: "arrow.counterclockwise", action: store.resetNickname)
             TextField("Status", text: $store.status)
         }
     }
