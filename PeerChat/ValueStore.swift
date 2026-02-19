@@ -1,9 +1,5 @@
 import SwiftUI
 import DeviceKit
-import Combine
-#if canImport(UIKit)
-import UIKit
-#endif
 
 final class ValueStore: ObservableObject {
     @AppStorage("nickname") var nickname = ValueStore.defaultNickname

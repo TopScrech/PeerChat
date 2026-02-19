@@ -8,46 +8,26 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack(path: $path) {
-            List {
-                Section("Chats") {
-                    if model.activeChats.isEmpty {
-                        ContentUnavailableView(
-                            "No Chats",
-                            systemImage: "ellipsis.message",
-                            description: Text("Send a chat request to start a conversation")
-                        )
-                    } else {
-                        ForEach(model.activeChats, id: \.chat.id) { duoChat in
-                            NavigationLink(value: duoChat.person.id) {
-                                Text(duoChat.person.name)
-                            }
-                        }
-                    }
-                }
-                
-                if !model.incomingChatPeers.isEmpty {
-                    Section("Incoming Chat Requests") {
-                        ForEach(model.incomingChatPeers, id: \.self) {
-                            IncomingChatRequestRowView(peer: $0)
-                        }
-                    }
-                }
-                
-                Section {
-                    if model.connectedPeers.isEmpty {
-                        Text("No Peers")
-                    } else {
-                        ForEach(model.connectedPeers, id: \.self) {
-                            ConnectedPeerRowView(peer: $0)
-                        }
-                    }
-                } header: {
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 12) {
                     HStack {
-                        Text("Near-By Peers")
+                        Text("Chats")
                         Spacer()
                         ProgressView()
                     }
+                    .padding(.horizontal)
+                    
+                    if model.connectedPeers.isEmpty {
+                        Text("No Peers")
+                            .padding(.horizontal)
+                    } else {
+                        ForEach(model.connectedPeers, id: \.self) {
+                            ConnectedPeerRowView(peer: $0)
+                                .padding(.horizontal)
+                        }
+                    }
                 }
+                .padding(.vertical, 8)
             }
             .navigationDestination(for: UUID.self) { personID in
                 if let person = model.chats.first(where: { $0.person.id == personID })?.person {

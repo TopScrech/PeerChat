@@ -12,20 +12,34 @@ struct ConnectedPeerRowView: View {
             
             Spacer()
             
-            if model.isActiveChat(with: peer) {
+            if model.hasIncomingChatRequest(from: peer) {
+                HStack {
+                    Button("", systemImage: "checkmark") {
+                        model.respondToChatRequest(from: peer, accept: true)
+                    }
+                    .labelStyle(.iconOnly)
+                    .foregroundStyle(.white)
+                    .padding(8)
+                    .background(.green, in: .circle)
+                    
+                    Button("", systemImage: "xmark") {
+                        model.respondToChatRequest(from: peer, accept: false)
+                    }
+                    .labelStyle(.iconOnly)
+                    .foregroundStyle(.white)
+                    .padding(8)
+                    .background(.red, in: .circle)
+                }
+            } else if model.isActiveChat(with: peer) {
                 Button("Open", systemImage: "bubble.left.and.bubble.right") {
                     model.openChat(with: peer)
                 }
                 
             } else if model.hasPendingOutgoingChatRequest(to: peer) {
-                Label("Requested", systemImage: "clock")
-                    .secondary()
-                
-            } else if model.hasIncomingChatRequest(from: peer) {
-                Label("Awaiting response", systemImage: "questionmark.bubble")
+                Text("Requested")
                     .secondary()
             } else {
-                Button("Request", systemImage: "paperplane") {
+                Button("Request") {
                     model.requestChat(with: peer)
                 }
             }
