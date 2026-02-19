@@ -29,21 +29,21 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		40EBFCE22A16E82D0041012C /* PeerChat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PeerChat.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		40EBFCE22A16E82D0041012C /* iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3365B6A2F43D61A00824B1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F366E1612F47610E000F8F30 /* macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3D854952F4508DE00B2A3F7 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		F3365B692F43D4F300824B1C /* Exceptions for "PeerChat" folder in "PeerChat" target */ = {
+		F3365B692F43D4F300824B1C /* Exceptions for "PeerChat" folder in "iOS" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 				Model/CryptoConvert.swift,
 				Model/CryptoModel.swift,
 			);
-			target = 40EBFCE12A16E82D0041012C /* PeerChat */;
+			target = 40EBFCE12A16E82D0041012C /* iOS */;
 		};
 		F36700052F47990000F8F30 /* Exceptions for "PeerChat" folder in "macOS" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
@@ -62,7 +62,7 @@
 		F3365B4E2F43D4F300824B1C /* PeerChat */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				F3365B692F43D4F300824B1C /* Exceptions for "PeerChat" folder in "PeerChat" target */,
+				F3365B692F43D4F300824B1C /* Exceptions for "PeerChat" folder in "iOS" target */,
 				F36700052F47990000F8F30 /* Exceptions for "PeerChat" folder in "macOS" target */,
 			);
 			path = PeerChat;
@@ -111,7 +111,7 @@
 		40EBFCE32A16E82D0041012C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				40EBFCE22A16E82D0041012C /* PeerChat.app */,
+				40EBFCE22A16E82D0041012C /* iOS.app */,
 				F366E1612F47610E000F8F30 /* macOS.app */,
 			);
 			name = Products;
@@ -120,9 +120,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		40EBFCE12A16E82D0041012C /* PeerChat */ = {
+		40EBFCE12A16E82D0041012C /* iOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 40EBFCF02A16E82F0041012C /* Build configuration list for PBXNativeTarget "PeerChat" */;
+			buildConfigurationList = 40EBFCF02A16E82F0041012C /* Build configuration list for PBXNativeTarget "iOS" */;
 			buildPhases = (
 				40EBFCDE2A16E82D0041012C /* Sources */,
 				40EBFCDF2A16E82D0041012C /* Frameworks */,
@@ -134,7 +134,7 @@
 			fileSystemSynchronizedGroups = (
 				F3365B4E2F43D4F300824B1C /* PeerChat */,
 			);
-			name = PeerChat;
+			name = iOS;
 			packageProductDependencies = (
 				F31188792BF90FBF0079A5FE /* ScrechKit */,
 				F36ACB392BF9E00A00B5744A /* Swifto Crypto */,
@@ -142,7 +142,7 @@
 				F366E1532F470866000F8F30 /* QuickLooking */,
 			);
 			productName = PeerSotial;
-			productReference = 40EBFCE22A16E82D0041012C /* PeerChat.app */;
+			productReference = 40EBFCE22A16E82D0041012C /* iOS.app */;
 			productType = "com.apple.product-type.application";
 		};
 		F366E1602F47610E000F8F30 /* macOS */ = {
@@ -207,7 +207,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				40EBFCE12A16E82D0041012C /* PeerChat */,
+				40EBFCE12A16E82D0041012C /* iOS */,
 				F366E1602F47610E000F8F30 /* macOS */,
 			);
 		};
@@ -360,7 +360,7 @@
 			};
 			name = Release;
 		};
-		40EBFCF12A16E82F0041012C /* Debug configuration for PBXNativeTarget "PeerChat" */ = {
+		40EBFCF12A16E82F0041012C /* Debug configuration for PBXNativeTarget "iOS" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -390,7 +390,7 @@
 			};
 			name = Debug;
 		};
-		40EBFCF22A16E82F0041012C /* Release configuration for PBXNativeTarget "PeerChat" */ = {
+		40EBFCF22A16E82F0041012C /* Release configuration for PBXNativeTarget "iOS" */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -520,11 +520,11 @@
 			);
 			defaultConfigurationName = Release;
 		};
-		40EBFCF02A16E82F0041012C /* Build configuration list for PBXNativeTarget "PeerChat" */ = {
+		40EBFCF02A16E82F0041012C /* Build configuration list for PBXNativeTarget "iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				40EBFCF12A16E82F0041012C /* Debug configuration for PBXNativeTarget "PeerChat" */,
-				40EBFCF22A16E82F0041012C /* Release configuration for PBXNativeTarget "PeerChat" */,
+				40EBFCF12A16E82F0041012C /* Debug configuration for PBXNativeTarget "iOS" */,
+				40EBFCF22A16E82F0041012C /* Release configuration for PBXNativeTarget "iOS" */,
 			);
 			defaultConfigurationName = Release;
 		};

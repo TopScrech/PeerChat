@@ -16,8 +16,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "40EBFCE12A16E82D0041012C"
-               BuildableName = "iOS.app"
-               BlueprintName = "iOS"
+               BuildableName = "PeerChat.app"
+               BlueprintName = "PeerChat"
                ReferencedContainer = "container:PeerChat.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -31,9 +31,9 @@
       shouldAutocreateTestPlan = "YES">
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Release"
-      selectedDebuggerIdentifier = ""
-      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
+      buildConfiguration = "Debug"
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
@@ -45,8 +45,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "40EBFCE12A16E82D0041012C"
-            BuildableName = "iOS.app"
-            BlueprintName = "iOS"
+            BuildableName = "PeerChat.app"
+            BlueprintName = "PeerChat"
             ReferencedContainer = "container:PeerChat.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -62,8 +62,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "40EBFCE12A16E82D0041012C"
-            BuildableName = "iOS.app"
-            BlueprintName = "iOS"
+            BuildableName = "PeerChat.app"
+            BlueprintName = "PeerChat"
             ReferencedContainer = "container:PeerChat.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
