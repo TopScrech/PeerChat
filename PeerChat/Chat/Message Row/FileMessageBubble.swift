@@ -11,10 +11,11 @@ struct FileMessageBubble: View {
     let fileData: Data?
     let isCurrentUser: Bool
     
+    @State private var preparedFile: PreparedFile?
     @State private var openedFileURL: URL?
-    #if !os(macOS)
+#if !os(macOS)
     @State private var previewItem: QuickLookPreview?
-    #endif
+#endif
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -29,8 +30,16 @@ struct FileMessageBubble: View {
                 HStack(spacing: 12) {
                     Button("Open", systemImage: "doc.text.magnifyingglass", action: openPreview)
                     
-                    ShareLink(item: fileData, preview: SharePreview(fileName ?? "File")) {
-                        Label("Save", systemImage: "square.and.arrow.down")
+                    if let preparedFile {
+                        ShareLink(
+                            item: preparedFile.url,
+                            preview: SharePreview(preparedFile.fileName)
+                        ) {
+                            Label("Save", systemImage: "square.and.arrow.down")
+                        }
+                    } else {
+                        Button("Save", systemImage: "square.and.arrow.down") {}
+                            .disabled(true)
                     }
                 }
                 .callout()
@@ -48,68 +57,103 @@ struct FileMessageBubble: View {
             isCurrentUser ? .blue : .secondary,
             in: .rect(cornerRadius: 20, style: .continuous)
         )
-        #if os(macOS)
-        .onDisappear(perform: cleanupPreviewFile)
-        #else
-        .sheet(
-            item: $previewItem,
-            onDismiss: cleanupPreviewFile
-        ) {
-            QuickLookView($0.url)
+        .task(id: fileIdentity) {
+            prepareFile()
         }
-        #endif
+        .onDisappear(perform: cleanupPreparedFile)
+#if !os(macOS)
+        .sheet(
+            item: $previewItem
+        ) { preview in
+            NavigationStack {
+                QuickLookView(preview.url)
+                    .navigationTitle(preview.title)
+                    .navigationBarTitleDisplayMode(.inline)
+            }
+        }
+#endif
     }
     
     private func openPreview() {
-        guard let fileData else {
+        if preparedFile == nil {
+            preparedFile = makePreparedFile()
+        }
+        
+        guard let preparedFile else {
             return
         }
         
-        let previewDirectory = FileManager.default
+#if os(macOS)
+        openedFileURL = preparedFile.url
+        NSWorkspace.shared.open(preparedFile.url)
+#else
+        previewItem = .init(
+            url: preparedFile.url,
+            title: preparedFile.fileName
+        )
+#endif
+    }
+    
+    private func prepareFile() {
+        guard preparedFile == nil else {
+            return
+        }
+        
+        preparedFile = makePreparedFile()
+    }
+    
+    private func makePreparedFile() -> PreparedFile? {
+        guard let fileData else {
+            return nil
+        }
+        
+        let directory = FileManager.default
             .temporaryDirectory
-            .appendingPathComponent("PeerChatQuickLook", isDirectory: true)
+            .appendingPathComponent("PeerChatAttachments", isDirectory: true)
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        
+        let fileName = sanitizedFileName
+        let fileURL = directory.appendingPathComponent(fileName)
         
         do {
             try FileManager.default.createDirectory(
-                at: previewDirectory,
+                at: directory,
                 withIntermediateDirectories: true
             )
+            try fileData.write(to: fileURL, options: .atomic)
             
-            let previewName = "\(UUID().uuidString)-\(sanitizedFileName)"
-            let url = previewDirectory.appendingPathComponent(previewName)
-            
-            try fileData.write(to: url, options: .atomic)
-            
-            #if os(macOS)
-            if let openedFileURL {
-                try? FileManager.default.removeItem(at: openedFileURL)
-            }
-            openedFileURL = url
-            NSWorkspace.shared.open(url)
-            #else
-            previewItem = .init(url: url)
-            #endif
+            return .init(
+                directoryURL: directory,
+                url: fileURL,
+                fileName: fileName
+            )
         } catch {
-            print("Could not prepare Quick Look preview")
+            print("Could not prepare file")
+            return nil
         }
     }
     
-    private func cleanupPreviewFile() {
-        #if os(macOS)
-        guard let openedFileURL else {
+    private func cleanupPreparedFile() {
+        guard let preparedFile else {
+            cleanupPreviewState()
             return
         }
         
-        try? FileManager.default.removeItem(at: openedFileURL)
+        try? FileManager.default.removeItem(at: preparedFile.directoryURL)
+        self.preparedFile = nil
+        cleanupPreviewState()
+    }
+    
+    private func cleanupPreviewState() {
+#if os(macOS)
         self.openedFileURL = nil
-        #else
-        guard let previewItem else {
-            return
-        }
-        
-        try? FileManager.default.removeItem(at: previewItem.url)
+#else
         self.previewItem = nil
-        #endif
+#endif
+    }
+    
+    private var fileIdentity: String {
+        "\(sanitizedFileName)-\(fileData?.count ?? -1)"
     }
     
     private var sanitizedFileName: String {
@@ -124,6 +168,13 @@ struct FileMessageBubble: View {
 
 private struct QuickLookPreview: Identifiable {
     let url: URL
+    let title: String
     
     var id: URL { url }
+}
+
+private struct PreparedFile {
+    let directoryURL: URL
+    let url: URL
+    let fileName: String
 }
