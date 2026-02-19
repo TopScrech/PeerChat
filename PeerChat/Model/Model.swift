@@ -408,6 +408,26 @@ final class Model: NSObject {
             sendDeleteRequest(id, to: person)
         }
     }
+
+    func clearAllMessages(for person: Person) {
+        guard let chatIndex = chats.firstIndex(where: { $0.person.id == person.id }) else {
+            return
+        }
+
+        let messageIDs = chats[chatIndex].chat.messages.map(\.id)
+
+        guard !messageIDs.isEmpty else {
+            return
+        }
+
+        _ = withAnimation {
+            chats[chatIndex].chat.messages.removeAll()
+        }
+
+        for id in messageIDs {
+            sendDeleteRequest(id, to: person)
+        }
+    }
     
     func handleCloseChat(from peer: MCPeerID) {
         print(peer.displayName, "has disconnected")

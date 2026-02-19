@@ -62,6 +62,10 @@ struct ChatView: View {
 #if os(macOS)
             ToolbarItem {
                 Menu {
+                    Button("Clear All Messages", systemImage: "trash", role: .destructive) {
+                        model.clearAllMessages(for: person)
+                    }
+
                     Button("Disconnect", role: .destructive) {
                         dismiss()
                         model.disconnectPeer(person.id)
@@ -73,6 +77,10 @@ struct ChatView: View {
 #else
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
+                    Button("Clear All Messages", systemImage: "trash", role: .destructive) {
+                        model.clearAllMessages(for: person)
+                    }
+
                     Button("Disconnect", role: .destructive) {
                         dismiss()
                         model.disconnectPeer(person.id)
