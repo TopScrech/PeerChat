@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		F311887A2BF90FBF0079A5FE /* ScrechKit in Frameworks */ = {isa = PBXBuildFile; productRef = F31188792BF90FBF0079A5FE /* ScrechKit */; };
+		F366E1542F470866000F8F30 /* QuickLooking in Frameworks */ = {isa = PBXBuildFile; productRef = F366E1532F470866000F8F30 /* QuickLooking */; };
 		F36ACB3A2BF9E00A00B5744A /* Swifto Crypto in Frameworks */ = {isa = PBXBuildFile; productRef = F36ACB392BF9E00A00B5744A /* Swifto Crypto */; };
 		F3D854942F44DCB900B2A3F7 /* DeviceKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3D854932F44DCB900B2A3F7 /* DeviceKit */; };
 /* End PBXBuildFile section */
@@ -56,6 +57,7 @@
 		40EBFCDF2A16E82D0041012C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				F366E1542F470866000F8F30 /* QuickLooking in Frameworks */,
 				F36ACB3A2BF9E00A00B5744A /* Swifto Crypto in Frameworks */,
 				F311887A2BF90FBF0079A5FE /* ScrechKit in Frameworks */,
 				F3D854942F44DCB900B2A3F7 /* DeviceKit in Frameworks */,
@@ -104,6 +106,7 @@
 				F31188792BF90FBF0079A5FE /* ScrechKit */,
 				F36ACB392BF9E00A00B5744A /* Swifto Crypto */,
 				F3D854932F44DCB900B2A3F7 /* DeviceKit */,
+				F366E1532F470866000F8F30 /* QuickLooking */,
 			);
 			productName = PeerSotial;
 			productReference = 40EBFCE22A16E82D0041012C /* PeerChat.app */;
@@ -136,6 +139,7 @@
 				F31188782BF90FBF0079A5FE /* XCRemoteSwiftPackageReference "ScrechKit" */,
 				F36ACB382BF9E00A00B5744A /* XCRemoteSwiftPackageReference "Swifto-Crypto" */,
 				F3D854922F44DCB900B2A3F7 /* XCRemoteSwiftPackageReference "DeviceKit" */,
+				F366E1522F470866000F8F30 /* XCRemoteSwiftPackageReference "QuickLooking" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 40EBFCE32A16E82D0041012C /* Products */;
@@ -374,6 +378,14 @@
 				kind = branch;
 			};
 		};
+		F366E1522F470866000F8F30 /* XCRemoteSwiftPackageReference "QuickLooking" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/TopScrech/QuickLooking";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		F36ACB382BF9E00A00B5744A /* XCRemoteSwiftPackageReference "Swifto-Crypto" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/TopScrech/Swifto-Crypto";
@@ -397,6 +409,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F31188782BF90FBF0079A5FE /* XCRemoteSwiftPackageReference "ScrechKit" */;
 			productName = ScrechKit;
+		};
+		F366E1532F470866000F8F30 /* QuickLooking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F366E1522F470866000F8F30 /* XCRemoteSwiftPackageReference "QuickLooking" */;
+			productName = QuickLooking;
 		};
 		F36ACB392BF9E00A00B5744A /* Swifto Crypto */ = {
 			isa = XCSwiftPackageProductDependency;

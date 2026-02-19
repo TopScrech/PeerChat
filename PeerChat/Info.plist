@@ -4,6 +4,8 @@
 <dict>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Multipeer Connectivity</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Record and send voice messages</string>
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_PeerChat._tcp</string>

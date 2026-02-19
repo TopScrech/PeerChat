@@ -1,10 +1,7 @@
 import SwiftUI
-import MultipeerConnectivity
-import SwiftoCrypto
 
 struct MessageRow: View {
     @Environment(Model.self) private var model
-    @Environment(CryptoModel.self) private var crypto
     
     private let message: Message
     private let person: Person
@@ -20,15 +17,6 @@ struct MessageRow: View {
         message.from.id == model.myPerson.id
     }
     
-    var decryptedMessage: String? {
-        guard let encryptedData = Data(base64Encoded: message.text) else {
-            print("Invalid encrypted text")
-            return nil
-        }
-        
-        return crypto.decrypt(encryptedData, using: crypto.privateKey)
-    }
-    
     var body: some View {
         HStack {
             if isCurrentUser {
@@ -36,23 +24,10 @@ struct MessageRow: View {
             }
             
             VStack {
-                if let decryptedMessage {
-                    if !decryptedMessage.trimmingCharacters(in: .whitespacesAndNewlines).containsOnlyEmoji {
-                        Text(decryptedMessage)
-                            .foregroundColor(isCurrentUser ? .white : .primary)
-                            .padding(.horizontal)
-                            .padding(.vertical, 8)
-                            .background(
-                                isCurrentUser ? .blue : .secondary,
-                                in: .rect(cornerRadius: 20, style: .continuous)
-                            )
-                    } else {
-                        Text(decryptedMessage.trimmingCharacters(in: .whitespacesAndNewlines))
-                            .fontSize(40)
-                            .multilineTextAlignment(isCurrentUser ? .trailing : .leading)
-                            .padding()
-                    }
-                }
+                MessageContentView(
+                    message: message,
+                    isCurrentUser: isCurrentUser
+                )
                 
                 Text(message.date, format: .dateTime)
                     .multilineTextAlignment(isCurrentUser ? .trailing : .leading)

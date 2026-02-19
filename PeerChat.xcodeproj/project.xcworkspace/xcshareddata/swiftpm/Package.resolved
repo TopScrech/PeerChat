@@ -1,5 +1,5 @@
 {
-  "originHash" : "3d191f88c68792a50e371b7e0b409cc3c09df9b964039b5d6584bc0985648de5",
+  "originHash" : "2afb4752d6255ed66c68155af5da3c0f934dfdd08de690127b9a67a2ae9f4d70",
   "pins" : [
     {
       "identity" : "devicekit",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "581df61650bc457ec00373a592a84be3e7468eb1",
         "version" : "5.7.0"
+      }
+    },
+    {
+      "identity" : "quicklooking",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/TopScrech/QuickLooking",
+      "state" : {
+        "branch" : "main",
+        "revision" : "12da914fc7f19efc4b9273b2e7343e56f76a56a3"
       }
     },
     {

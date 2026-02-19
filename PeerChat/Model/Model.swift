@@ -5,6 +5,7 @@ import SwiftoCrypto
 @Observable
 final class Model: NSObject {
     private let serviceType = "PeerChat"
+    let maxAttachmentBytes = 10 * 1024 * 1024
     private let myPeerId = MCPeerID(displayName: ValueStore().nickname)
     private let serviceAdvertiser: MCNearbyServiceAdvertiser
     private let serviceBrowser: MCNearbyServiceBrowser
@@ -134,29 +135,83 @@ final class Model: NSObject {
             return
         }
         
-        let encryptedMessage = encryptedMessageData.base64EncodedString()
+        sendMessage(
+            Message(
+                text: encryptedMessageData.base64EncodedString(),
+                from: myPerson
+            ),
+            chat: chat
+        )
+    }
+    
+    func sendVoiceMessage(_ voiceData: Data, duration: TimeInterval, chat: Chat) {
+        guard voiceData.count <= maxAttachmentBytes else {
+            print("Voice message is too large")
+            return
+        }
         
+        guard let encryptedAudio = crypto.encryptAttachment(voiceData) else {
+            print("Could not encrypt voice message")
+            return
+        }
+        
+        sendMessage(
+            Message(
+                voiceData: encryptedAudio,
+                duration: duration,
+                from: myPerson
+            ),
+            chat: chat
+        )
+    }
+    
+    func sendFile(
+        _ fileData: Data,
+        fileName: String,
+        fileType: String?,
+        chat: Chat
+    ) {
+        guard fileData.count <= maxAttachmentBytes else {
+            print("File is too large")
+            return
+        }
+        
+        guard let encryptedData = crypto.encryptAttachment(fileData) else {
+            print("Could not encrypt file")
+            return
+        }
+        
+        sendMessage(
+            Message(
+                fileData: encryptedData,
+                fileName: fileName,
+                fileType: fileType,
+                from: myPerson
+            ),
+            chat: chat
+        )
+    }
+    
+    private func sendMessage(_ message: Message, chat: Chat) {
         let newMessage = ConnectMessage(
             messageType: .Message,
-            message: Message(
-                text: encryptedMessage,
-                from: self.myPerson
-            )
+            message: message
         )
         
-        if !self.session.connectedPeers.isEmpty {
-            do {
-                if let data = try? self.encoder.encode(newMessage) {
-                    if let newMessagePayload = newMessage.message,
-                       let index = self.chats.firstIndex(where: { $0.person.id == chat.person.id }) {
-                        self.chats[index].chat.messages.append(newMessagePayload)
-                    }
-                    
-                    try self.session.send(data, toPeers: [chat.peer], with: .reliable)
+        guard !session.connectedPeers.isEmpty else {
+            return
+        }
+        
+        do {
+            if let data = try? encoder.encode(newMessage) {
+                if let index = chats.firstIndex(where: { $0.person.id == chat.person.id }) {
+                    chats[index].chat.messages.append(message)
                 }
-            } catch {
-                print("Error for sending:", error.localizedDescription)
+                
+                try session.send(data, toPeers: [chat.peer], with: .reliable)
             }
+        } catch {
+            print("Error for sending:", error.localizedDescription)
         }
     }
     

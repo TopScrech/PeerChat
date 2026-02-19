@@ -9,7 +9,15 @@ struct MessageInfo: View {
     
     var body: some View {
         List {
-            Text(message.text)
+            Text("Type: \(message.contentType.rawValue.capitalized)")
+            
+            if message.contentType == .text {
+                Text(message.text)
+            }
+            
+            if let attachmentName = message.attachmentName {
+                Text(attachmentName)
+            }
             
             HStack {
                 Text(message.date, style: .date)
