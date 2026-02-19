@@ -15,6 +15,8 @@ struct Message: Codable, Equatable {
     let attachmentData: Data?
     let voiceDuration: TimeInterval?
     let replyOnId: UUID?
+    var deliveryDuration: TimeInterval?
+    var deliverySizeBytes: Int?
     
     init(
         text: String,
@@ -31,6 +33,8 @@ struct Message: Codable, Equatable {
         self.attachmentData = nil
         self.voiceDuration = nil
         self.replyOnId = replyOnId
+        self.deliveryDuration = nil
+        self.deliverySizeBytes = nil
     }
     
     init(
@@ -49,6 +53,8 @@ struct Message: Codable, Equatable {
         self.attachmentData = voiceData
         self.voiceDuration = duration
         self.replyOnId = nil
+        self.deliveryDuration = nil
+        self.deliverySizeBytes = nil
     }
     
     init(
@@ -68,6 +74,8 @@ struct Message: Codable, Equatable {
         self.attachmentData = fileData
         self.voiceDuration = nil
         self.replyOnId = nil
+        self.deliveryDuration = nil
+        self.deliverySizeBytes = nil
     }
     
     enum CodingKeys: String, CodingKey {
@@ -81,6 +89,8 @@ struct Message: Codable, Equatable {
         case attachmentData
         case voiceDuration
         case replyOnId
+        case deliveryDuration
+        case deliverySizeBytes
     }
     
     init(from decoder: Decoder) throws {
@@ -96,6 +106,8 @@ struct Message: Codable, Equatable {
         attachmentData = try container.decodeIfPresent(Data.self, forKey: .attachmentData)
         voiceDuration = try container.decodeIfPresent(TimeInterval.self, forKey: .voiceDuration)
         replyOnId = try container.decodeIfPresent(UUID.self, forKey: .replyOnId)
+        deliveryDuration = try container.decodeIfPresent(TimeInterval.self, forKey: .deliveryDuration)
+        deliverySizeBytes = try container.decodeIfPresent(Int.self, forKey: .deliverySizeBytes)
     }
 }
 

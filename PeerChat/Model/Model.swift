@@ -576,13 +576,17 @@ final class Model: NSObject {
             return
         }
         
-        let timeInterval = max(Date().timeIntervalSince(message.date), 0.001)
-        let speed = Double(size) / timeInterval / 1024
+        let deliveryDuration = max(Date().timeIntervalSince(message.date), 0)
+        let speedBytesPerSecond = Double(size) / max(deliveryDuration, 0.001)
+        
+        var receivedMessage = message
+        receivedMessage.deliveryDuration = deliveryDuration
+        receivedMessage.deliverySizeBytes = size
         
         print("New Message:", message.text)
-        print("Speed: \(Int(speed)) KB/s")
+        print("Speed: \(Int(speedBytesPerSecond / 1024)) KB/s")
         
-        chats[chatIndex].chat.messages.append(message)
+        chats[chatIndex].chat.messages.append(receivedMessage)
     }
 }
 

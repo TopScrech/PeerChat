@@ -1,4 +1,4 @@
-import SwiftUI
+import ScrechKit
 
 struct MessageInfo: View {
     private var message: Message
@@ -26,6 +26,14 @@ struct MessageInfo: View {
                 LabeledContent("File Size", value: fileSize)
             }
             
+            if let deliveryDurationText {
+                LabeledContent("Delivery Duration", value: deliveryDurationText)
+            }
+            
+            if let deliverySpeedText {
+                LabeledContent("Delivery Speed", value: deliverySpeedText)
+            }
+            
             LabeledContent {
                 HStack(spacing: 5) {
                     Text(message.date, style: .date)
@@ -35,6 +43,30 @@ struct MessageInfo: View {
                 Text("Date")
             }
         }
+    }
+    
+    private var deliveryDurationText: String? {
+        guard let deliveryDuration = message.deliveryDuration else {
+            return nil
+        }
+        
+        let seconds = max(deliveryDuration, 0)
+        let formattedSeconds = seconds.formatted(
+            .number.precision(.fractionLength(1))
+        )
+        
+        return "\(formattedSeconds)s"
+    }
+    
+    private var deliverySpeedText: String? {
+        guard let deliveryDuration = message.deliveryDuration,
+              let deliverySizeBytes = message.deliverySizeBytes else {
+            return nil
+        }
+        
+        let speedBytesPerSecond = Double(deliverySizeBytes) / max(deliveryDuration, 0.001)
+        
+        return "\(formatBytes(Int64(speedBytesPerSecond)))/s"
     }
 }
 

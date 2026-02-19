@@ -37,22 +37,6 @@ struct FileMessageBubble: View {
             in: .rect(cornerRadius: 20, style: .continuous)
         )
         .contentShape(.rect(cornerRadius: 20, style: .continuous))
-        .contextMenu {
-            if let preparedFile {
-                ShareLink(item: preparedFile.url) {
-                    Label("Save", systemImage: "square.and.arrow.up")
-                }
-            } else {
-                Button("Save", systemImage: "square.and.arrow.down") {}
-                    .disabled(true)
-            }
-            
-            if canDelete, let onDelete {
-                Button("Delete", systemImage: "trash", role: .destructive) {
-                    onDelete()
-                }
-            }
-        }
         .onTapGesture {
             openPreview()
         }

@@ -8,9 +8,8 @@ Peer-to-Peer messenger written in SwiftUI, using [Multipeer Connectivity](https:
 - iOS/iPadOS 17+
 - macOS 14+
 
-## Featues
+## Features
 - Internet connection not required
 - End-to-end encryption
 - Supports emojis, voice messages & files
 - Deleting messages for all chat members
-- *Annnnnnnd more!*
