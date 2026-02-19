@@ -13,9 +13,13 @@ final class Model: NSObject {
     private let encoder = PropertyListEncoder()
     private let decoder = PropertyListDecoder()
     private var invitedPeers: Set<MCPeerID> = []
+    private var outgoingChatRequestIDs: [MCPeerID: UUID] = [:]
+    private var incomingChatRequestIDs: [MCPeerID: UUID] = [:]
+    private var pendingActivationPeers: Set<MCPeerID> = []
     
     var connectedPeers: [MCPeerID] = []
     var chats: [DuoChat] = []
+    var chatRouteID: UUID?
     
     var myPerson: Person
     var crypto: CryptoModel
@@ -79,10 +83,99 @@ final class Model: NSObject {
             connectedPeers.remove(at: index)
         }
         
+        clearChatRequests(for: peerID)
+        
         session.cancelConnectPeer(peerID)
         
         chats.removeAll {
             $0.chat.peer == peerID
+        }
+    }
+    
+    var activeChats: [DuoChat] {
+        chats.filter(\.isActive)
+    }
+    
+    var incomingChatPeers: [MCPeerID] {
+        incomingChatRequestIDs
+            .keys
+            .sorted {
+                displayName(for: $0) < displayName(for: $1)
+            }
+    }
+    
+    func displayName(for peer: MCPeerID) -> String {
+        chats.first(where: { $0.chat.peer == peer })?.person.name ?? peer.displayName
+    }
+    
+    func hasPendingOutgoingChatRequest(to peer: MCPeerID) -> Bool {
+        outgoingChatRequestIDs[peer] != nil
+    }
+    
+    func hasIncomingChatRequest(from peer: MCPeerID) -> Bool {
+        incomingChatRequestIDs[peer] != nil
+    }
+    
+    func isActiveChat(with peer: MCPeerID) -> Bool {
+        chats.first(where: { $0.chat.peer == peer })?.isActive == true
+    }
+    
+    func openChat(with peer: MCPeerID) {
+        guard let chat = chats.first(where: { $0.chat.peer == peer }) else {
+            return
+        }
+        
+        guard chat.isActive else {
+            return
+        }
+        
+        chatRouteID = chat.person.id
+    }
+    
+    func consumeChatRoute() {
+        chatRouteID = nil
+    }
+    
+    func requestChat(with peer: MCPeerID) {
+        guard connectedPeers.contains(peer) else {
+            return
+        }
+        
+        if isActiveChat(with: peer) {
+            openChat(with: peer)
+            return
+        }
+        
+        guard outgoingChatRequestIDs[peer] == nil else {
+            return
+        }
+        
+        let request = ChatRequest()
+        
+        let requestMessage = ConnectMessage(
+            messageType: .ChatRequest,
+            chatRequest: request
+        )
+        
+        do {
+            let data = try encoder.encode(requestMessage)
+            try session.send(data, toPeers: [peer], with: .reliable)
+            outgoingChatRequestIDs[peer] = request.id
+        } catch {
+            print("Error sending chat request:", error)
+        }
+    }
+    
+    func respondToChatRequest(from peer: MCPeerID, accept: Bool) {
+        guard let requestID = incomingChatRequestIDs[peer] else {
+            return
+        }
+        
+        sendChatRequestResponse(to: peer, requestID: requestID, accept: accept)
+        incomingChatRequestIDs[peer] = nil
+        
+        if accept {
+            activateChat(with: peer, shouldRoute: true)
         }
     }
     
@@ -261,6 +354,28 @@ final class Model: NSObject {
                 person: person,
                 initiatedByLocalUser: false
             )
+            
+        case .ChatRequest:
+            guard let request = info.chatRequest else {
+                print("Missing chat request payload")
+                return
+            }
+            
+            if isActiveChat(with: from) {
+                sendChatRequestResponse(to: from, requestID: request.id, accept: true)
+                openChat(with: from)
+                return
+            }
+            
+            incomingChatRequestIDs[from] = request.id
+            
+        case .ChatRequestResponse:
+            guard let response = info.chatRequestResponse else {
+                print("Missing chat request response payload")
+                return
+            }
+            
+            handleChatRequestResponse(response, from: from)
         }
     }
     
@@ -302,7 +417,61 @@ final class Model: NSObject {
         print(peer.displayName, "has disconnected")
         
         session.disconnect()
+        clearChatRequests(for: peer)
         changeState.toggle()
+    }
+    
+    private func handleChatRequestResponse(_ response: ChatRequestResponse, from peer: MCPeerID) {
+        guard let requestID = outgoingChatRequestIDs[peer] else {
+            return
+        }
+        
+        guard requestID == response.requestID else {
+            return
+        }
+        
+        outgoingChatRequestIDs[peer] = nil
+        
+        if response.isAccepted {
+            activateChat(with: peer, shouldRoute: true)
+        }
+    }
+    
+    private func sendChatRequestResponse(to peer: MCPeerID, requestID: UUID, accept: Bool) {
+        let response = ConnectMessage(
+            messageType: .ChatRequestResponse,
+            chatRequestResponse: ChatRequestResponse(
+                requestID: requestID,
+                isAccepted: accept
+            )
+        )
+        
+        do {
+            let data = try encoder.encode(response)
+            try session.send(data, toPeers: [peer], with: .reliable)
+        } catch {
+            print("Error sending chat response:", error)
+        }
+    }
+    
+    private func activateChat(with peer: MCPeerID, shouldRoute: Bool) {
+        if let chatIndex = chats.firstIndex(where: { $0.chat.peer == peer }) {
+            chats[chatIndex].isActive = true
+            
+            if shouldRoute {
+                chatRouteID = chats[chatIndex].person.id
+            }
+            
+            return
+        }
+        
+        pendingActivationPeers.insert(peer)
+    }
+    
+    private func clearChatRequests(for peer: MCPeerID) {
+        outgoingChatRequestIDs[peer] = nil
+        incomingChatRequestIDs[peer] = nil
+        pendingActivationPeers.remove(peer)
     }
     
     //    func reciveInfo(info: ConnectMessage, from: MCPeerID) {
@@ -335,6 +504,12 @@ final class Model: NSObject {
         if let index = chats.firstIndex(where: { $0.chat.peer == from }) {
             chats[index].person = person
             chats[index].chat.person = person
+            
+            if pendingActivationPeers.remove(from) != nil {
+                chats[index].isActive = true
+                chatRouteID = person.id
+            }
+            
             return
         }
         
@@ -349,6 +524,12 @@ final class Model: NSObject {
             chats[existingIndex].person = person
             chats[existingIndex].chat.peer = from
             chats[existingIndex].chat.person = person
+            
+            if pendingActivationPeers.remove(from) != nil {
+                chats[existingIndex].isActive = true
+                chatRouteID = person.id
+            }
+            
             return
         }
         
@@ -356,6 +537,12 @@ final class Model: NSObject {
         
         let newChat = DuoChat(person: person, chat: Chat(peer: from, person: person))
         chats.append(newChat)
+        
+        if let newChatIndex = chats.firstIndex(where: { $0.chat.peer == from }),
+           pendingActivationPeers.remove(from) != nil {
+            chats[newChatIndex].isActive = true
+            chatRouteID = person.id
+        }
     }
     
     func newMessage(
@@ -413,6 +600,10 @@ extension Model {
         
         chats.removeAll()
         connectedPeers.removeAll()
+        outgoingChatRequestIDs.removeAll()
+        incomingChatRequestIDs.removeAll()
+        pendingActivationPeers.removeAll()
+        chatRouteID = nil
         
         // Start browsing and advertising again
         serviceAdvertiser.startAdvertisingPeer()
@@ -531,6 +722,7 @@ private extension Model {
         
         if state == .notConnected {
             invitedPeers.remove(peerID)
+            clearChatRequests(for: peerID)
         }
         
         connectedPeers = session.connectedPeers

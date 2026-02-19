@@ -5,11 +5,15 @@ struct ConnectMessage: Codable {
         case Message,
              PeerInfo,
              CloseChat,
-             DeleteMessage
+             DeleteMessage,
+             ChatRequest,
+             ChatRequestResponse
     }
     
     var messageType: MessageType = .Message
     var peerInfo: Person? = nil
     var message: Message? = nil
     var deleteMessage: DeleteMessage? = nil
+    var chatRequest: ChatRequest? = nil
+    var chatRequestResponse: ChatRequestResponse? = nil
 }
