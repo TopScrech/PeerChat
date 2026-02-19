@@ -1,5 +1,6 @@
 import SwiftUI
 import ScrechKit
+import SwiftoCrypto
 
 struct MessageRow: View {
     @Environment(Model.self) private var model

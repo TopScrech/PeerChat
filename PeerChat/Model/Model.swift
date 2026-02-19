@@ -392,14 +392,6 @@ final class Model: NSObject {
             return
         }
         
-        let message = chats[chatIndex].chat.messages[messageIndex]
-        let isAuthorizedDelete = true
-        
-        guard isAuthorizedDelete else {
-            print("Unauthorized delete request for message:", id)
-            return
-        }
-        
         _ = withAnimation {
             chats[chatIndex].chat.messages.remove(at: messageIndex)
         }
@@ -408,22 +400,22 @@ final class Model: NSObject {
             sendDeleteRequest(id, to: person)
         }
     }
-
+    
     func clearAllMessages(for person: Person) {
         guard let chatIndex = chats.firstIndex(where: { $0.person.id == person.id }) else {
             return
         }
-
+        
         let messageIDs = chats[chatIndex].chat.messages.map(\.id)
-
+        
         guard !messageIDs.isEmpty else {
             return
         }
-
-        _ = withAnimation {
+        
+        withAnimation {
             chats[chatIndex].chat.messages.removeAll()
         }
-
+        
         for id in messageIDs {
             sendDeleteRequest(id, to: person)
         }
