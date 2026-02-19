@@ -7,6 +7,7 @@ struct MessageRow: View {
     private let message: Message
     private let person: Person
     private let geo: GeometryProxy
+    @State private var preparedFileContext: FileMessagePreparedFileContext?
     
     init(_ message: Message, person: Person, geo: GeometryProxy) {
         self.message = message
@@ -41,7 +42,21 @@ struct MessageRow: View {
             }
         }
         .padding(.vertical, 5)
+        .onPreferenceChange(FileMessagePreparedFilePreferenceKey.self) { preparedFileContext in
+            self.preparedFileContext = preparedFileContext
+        }
         .contextMenu {
+            if message.contentType == .file {
+                if let preparedFileContext {
+                    ShareLink(item: preparedFileContext.url) {
+                        Label("Save", systemImage: "square.and.arrow.up")
+                    }
+                } else {
+                    Button("Save", systemImage: "square.and.arrow.down") {}
+                        .disabled(true)
+                }
+            }
+            
             NavigationLink("Info") {
                 MessageInfo(message)
             }
