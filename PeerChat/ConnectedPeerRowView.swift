@@ -4,6 +4,7 @@ import ScrechKit
 struct ConnectedPeerRowView: View {
     @Environment(Model.self) private var model
     let peer: MCPeerID
+    private let rowHeight: CGFloat = 56
     
     var body: some View {
         HStack {
@@ -38,13 +39,16 @@ struct ConnectedPeerRowView: View {
                 .accessibilityLabel("Open Chat")
                 
             } else if model.hasPendingOutgoingChatRequest(to: peer) {
-                Text("Requested")
-                    .secondary()
+                ProgressView()
+                    .controlSize(.small)
             } else {
                 Button("Request") {
                     model.requestChat(with: peer)
                 }
             }
         }
+        .frame(height: rowHeight)
+        .padding(.horizontal, 12)
+        .background(.thinMaterial, in: .rect(cornerRadius: 14))
     }
 }
