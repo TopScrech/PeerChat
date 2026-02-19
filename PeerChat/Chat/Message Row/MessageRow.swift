@@ -36,6 +36,30 @@ struct MessageRow: View {
                     .secondary()
                     .footnote()
             }
+            .contextMenu {
+                if message.contentType == .file {
+                    if let preparedFileContext {
+                        ShareLink(item: preparedFileContext.url) {
+                            Label("Save", systemImage: "square.and.arrow.up")
+                        }
+                    } else {
+                        Button("Save", systemImage: "square.and.arrow.down") {}
+                            .disabled(true)
+                    }
+                }
+                
+                NavigationLink {
+                    MessageInfo(message, fileSize: fileSize)
+                } label: {
+                    Label("Info", systemImage: "info")
+                }
+                
+                if isCurrentUser {
+                    Button("Delete", systemImage: "trash", role: .destructive) {
+                        model.deleteMessage(message.id, person: person)
+                    }
+                }
+            }
             
             if !isCurrentUser {
                 Spacer(minLength: geo.size.width * 0.2)
@@ -44,28 +68,6 @@ struct MessageRow: View {
         .padding(.vertical, 5)
         .onPreferenceChange(FileMessagePreparedFilePreferenceKey.self) { preparedFileContext in
             self.preparedFileContext = preparedFileContext
-        }
-        .contextMenu {
-            if message.contentType == .file {
-                if let preparedFileContext {
-                    ShareLink(item: preparedFileContext.url) {
-                        Label("Save", systemImage: "square.and.arrow.up")
-                    }
-                } else {
-                    Button("Save", systemImage: "square.and.arrow.down") {}
-                        .disabled(true)
-                }
-            }
-            
-            NavigationLink("Info") {
-                MessageInfo(message, fileSize: fileSize)
-            }
-            
-            if isCurrentUser {
-                Button("Delete", role: .destructive) {
-                    model.deleteMessage(message.id, person: person)
-                }
-            }
         }
     }
     
