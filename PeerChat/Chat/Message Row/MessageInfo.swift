@@ -9,22 +9,25 @@ struct MessageInfo: View {
     
     var body: some View {
         List {
-            Text("Type: \(message.contentType.rawValue.capitalized)")
+            LabeledContent("Sender", value: message.from.name)
+            LabeledContent("Type", value: message.contentType.rawValue.capitalized)
             
             if message.contentType == .text {
-                Text(message.text)
+                LabeledContent("Text", value: message.text)
             }
             
             if let attachmentName = message.attachmentName {
-                Text(attachmentName)
+                LabeledContent("Attachment", value: attachmentName)
             }
             
-            HStack {
-                Text(message.date, style: .date)
-                Text(message.date, style: .time)
+            LabeledContent {
+                HStack(spacing: 5) {
+                    Text(message.date, style: .date)
+                    Text(message.date, style: .time)
+                }
+            } label: {
+                Text("Date")
             }
-            
-            Text(message.from.name)
         }
     }
 }
