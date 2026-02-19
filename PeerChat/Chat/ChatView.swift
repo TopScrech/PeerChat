@@ -59,7 +59,7 @@ struct ChatView: View {
             dismiss()
         }
         .toolbar {
-            #if os(macOS)
+#if os(macOS)
             ToolbarItem {
                 Menu {
                     Button("Disconnect", role: .destructive) {
@@ -70,7 +70,7 @@ struct ChatView: View {
                     Image(systemName: "ellipsis")
                 }
             }
-            #else
+#else
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
                     Button("Disconnect", role: .destructive) {
@@ -81,7 +81,7 @@ struct ChatView: View {
                     Image(systemName: "ellipsis")
                 }
             }
-            #endif
+#endif
         }
     }
 }

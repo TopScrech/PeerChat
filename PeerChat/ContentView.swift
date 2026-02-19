@@ -10,16 +10,13 @@ struct ContentView: View {
         NavigationStack(path: $path) {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 12) {
-                    HStack {
-                        Text("Chats")
-                        Spacer()
-                        ProgressView()
-                    }
-                    .padding(.horizontal)
-                    
                     if model.connectedPeers.isEmpty {
-                        Text("No Peers")
-                            .padding(.horizontal)
+                        ContentUnavailableView(
+                            "No Peers",
+                            systemImage: "person.2.slash",
+                            description: Text("Connect with nearby devices to start chatting")
+                        )
+                        .frame(maxWidth: .infinity)
                     } else {
                         ForEach(model.connectedPeers, id: \.self) {
                             ConnectedPeerRowView(peer: $0)
@@ -56,8 +53,10 @@ struct ContentView: View {
             .refreshable {
                 model.restartConnections()
             }
+            .navigationTitle("Chats")
+            .toolbarTitleDisplayMode(.inline)
             .toolbar {
-                #if os(macOS)
+#if os(macOS)
                 ToolbarItem {
                     NavigationLink {
                         SettingsView()
@@ -65,7 +64,7 @@ struct ContentView: View {
                         Label("Settings", systemImage: "gear")
                     }
                 }
-                #else
+#else
                 ToolbarItem(placement: .topBarTrailing) {
                     NavigationLink {
                         SettingsView()
@@ -73,7 +72,7 @@ struct ContentView: View {
                         Label("Settings", systemImage: "gear")
                     }
                 }
-                #endif
+#endif
             }
         }
     }

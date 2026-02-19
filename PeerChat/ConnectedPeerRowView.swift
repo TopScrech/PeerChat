@@ -1,4 +1,3 @@
-import SwiftUI
 import ScrechKit
 @preconcurrency import MultipeerConnectivity
 
@@ -14,7 +13,7 @@ struct ConnectedPeerRowView: View {
             
             if model.hasIncomingChatRequest(from: peer) {
                 HStack {
-                    Button("", systemImage: "checkmark") {
+                    SFButton("checkmark") {
                         model.respondToChatRequest(from: peer, accept: true)
                     }
                     .labelStyle(.iconOnly)
@@ -22,7 +21,7 @@ struct ConnectedPeerRowView: View {
                     .padding(8)
                     .background(.green, in: .circle)
                     
-                    Button("", systemImage: "xmark") {
+                    SFButton("xmark") {
                         model.respondToChatRequest(from: peer, accept: false)
                     }
                     .labelStyle(.iconOnly)
@@ -30,10 +29,13 @@ struct ConnectedPeerRowView: View {
                     .padding(8)
                     .background(.red, in: .circle)
                 }
+                
             } else if model.isActiveChat(with: peer) {
-                Button("Open", systemImage: "bubble.left.and.bubble.right") {
+                SFButton("bubble.left.and.bubble.right") {
                     model.openChat(with: peer)
                 }
+                .labelStyle(.iconOnly)
+                .accessibilityLabel("Open Chat")
                 
             } else if model.hasPendingOutgoingChatRequest(to: peer) {
                 Text("Requested")
