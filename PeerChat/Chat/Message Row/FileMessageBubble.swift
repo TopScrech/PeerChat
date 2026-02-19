@@ -10,6 +10,8 @@ struct FileMessageBubble: View {
     let fileName: String?
     let fileData: Data?
     let isCurrentUser: Bool
+    var canDelete = false
+    var onDelete: (() -> Void)?
     
     @State private var preparedFile: PreparedAttachmentFile?
 #if !os(macOS)
@@ -20,12 +22,8 @@ struct FileMessageBubble: View {
         VStack(alignment: .leading, spacing: 8) {
             Label(fileName ?? "File", systemImage: "doc.fill")
                 .callout(.semibold)
-            
-            if let fileData {
-                Text(ByteCountFormatStyle().format(Int64(fileData.count)))
-                    .caption()
-                    .foregroundStyle(isCurrentUser ? .white.opacity(0.9) : .secondary)
-            } else {
+
+            if fileData == nil {
                 Text("File unavailable")
                     .callout()
                     .foregroundStyle(isCurrentUser ? .white.opacity(0.9) : .secondary)
@@ -39,6 +37,22 @@ struct FileMessageBubble: View {
             in: .rect(cornerRadius: 20, style: .continuous)
         )
         .contentShape(.rect(cornerRadius: 20, style: .continuous))
+        .contextMenu {
+            if let preparedFile {
+                ShareLink(item: preparedFile.url) {
+                    Label("Save", systemImage: "square.and.arrow.up")
+                }
+            } else {
+                Button("Save", systemImage: "square.and.arrow.down") {}
+                    .disabled(true)
+            }
+            
+            if canDelete, let onDelete {
+                Button("Delete", systemImage: "trash", role: .destructive) {
+                    onDelete()
+                }
+            }
+        }
         .onTapGesture {
             openPreview()
         }
@@ -68,6 +82,13 @@ struct FileMessageBubble: View {
                                 preview: SharePreview(preparedFile.fileName)
                             ) {
                                 Label("Save", systemImage: "square.and.arrow.up")
+                            }
+                        }
+
+                        if canDelete, let onDelete {
+                            Button("Delete", systemImage: "trash", role: .destructive) {
+                                previewItem = nil
+                                onDelete()
                             }
                         }
                     }

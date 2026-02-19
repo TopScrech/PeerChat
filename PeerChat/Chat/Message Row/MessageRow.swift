@@ -18,6 +18,10 @@ struct MessageRow: View {
     private var isCurrentUser: Bool {
         message.from.id == model.myPerson.id
     }
+
+    private var canDelete: Bool {
+        return true
+    }
     
     var body: some View {
         HStack {
@@ -28,7 +32,11 @@ struct MessageRow: View {
             VStack {
                 MessageContentView(
                     message: message,
-                    isCurrentUser: isCurrentUser
+                    isCurrentUser: isCurrentUser,
+                    canDelete: canDelete,
+                    onDelete: {
+                        model.deleteMessage(message.id, person: person)
+                    }
                 )
                 
                 Text(message.date, format: .dateTime)
@@ -54,7 +62,7 @@ struct MessageRow: View {
                     Label("Info", systemImage: "info")
                 }
                 
-                if isCurrentUser {
+                if canDelete {
                     Button("Delete", systemImage: "trash", role: .destructive) {
                         model.deleteMessage(message.id, person: person)
                     }

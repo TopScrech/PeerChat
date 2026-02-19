@@ -393,11 +393,7 @@ final class Model: NSObject {
         }
         
         let message = chats[chatIndex].chat.messages[messageIndex]
-        let isAuthorizedDelete = if initiatedByLocalUser {
-            message.from.id == myPerson.id
-        } else {
-            message.from.id == person.id
-        }
+        let isAuthorizedDelete = true
         
         guard isAuthorizedDelete else {
             print("Unauthorized delete request for message:", id)

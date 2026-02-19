@@ -7,6 +7,8 @@ struct MessageContentView: View {
     
     let message: Message
     let isCurrentUser: Bool
+    var canDelete = false
+    var onDelete: (() -> Void)?
     
     var body: some View {
         switch message.contentType {
@@ -38,7 +40,9 @@ struct MessageContentView: View {
             FileMessageBubble(
                 fileName: message.attachmentName,
                 fileData: decryptedAttachmentData,
-                isCurrentUser: isCurrentUser
+                isCurrentUser: isCurrentUser,
+                canDelete: canDelete,
+                onDelete: onDelete
             )
         }
     }
