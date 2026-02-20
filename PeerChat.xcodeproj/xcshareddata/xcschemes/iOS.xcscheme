@@ -16,8 +16,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "40EBFCE12A16E82D0041012C"
-               BuildableName = "PeerChat.app"
-               BlueprintName = "PeerChat"
+               BuildableName = "iOS.app"
+               BlueprintName = "iOS"
                ReferencedContainer = "container:PeerChat.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,8 +45,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "40EBFCE12A16E82D0041012C"
-            BuildableName = "PeerChat.app"
-            BlueprintName = "PeerChat"
+            BuildableName = "iOS.app"
+            BlueprintName = "iOS"
             ReferencedContainer = "container:PeerChat.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -62,8 +62,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "40EBFCE12A16E82D0041012C"
-            BuildableName = "PeerChat.app"
-            BlueprintName = "PeerChat"
+            BuildableName = "iOS.app"
+            BlueprintName = "iOS"
             ReferencedContainer = "container:PeerChat.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

@@ -3,6 +3,9 @@ import ScrechKit
 import Observation
 @preconcurrency import MultipeerConnectivity
 import SwiftoCrypto
+#if os(iOS)
+import CallKit
+#endif
 
 private final class CallConversionInputSource {
     nonisolated(unsafe) private var didProvideBuffer = false
@@ -27,7 +30,7 @@ private final class CallConversionInputSource {
 @Observable
 final class Model: NSObject {
     enum CallState: String {
-        case idle, dialing, active
+        case idle, dialing, ringing, active
     }
     
     private enum SessionPayloadType: UInt8 {
@@ -37,6 +40,10 @@ final class Model: NSObject {
     
     private enum CallAudioPipelineError: Error {
         case unsupportedCaptureFormat
+    }
+    
+    private enum SystemCallEndReason {
+        case remoteEnded, failed, unanswered
     }
     
     private let serviceType = "PeerChat"
@@ -56,6 +63,11 @@ final class Model: NSObject {
     @ObservationIgnored private let callPlayerNode = AVAudioPlayerNode()
     @ObservationIgnored private var callRenderConfigured = false
     @ObservationIgnored private let callAudioFormat: AVAudioFormat
+    @ObservationIgnored private var callID: UUID?
+    @ObservationIgnored private var hasSentCallStart = false
+#if os(iOS)
+    @ObservationIgnored private let systemCallManager = SystemCallManager()
+#endif
     
     var connectedPeers: [MCPeerID] = []
     var chats: [DuoChat] = []
@@ -114,6 +126,9 @@ final class Model: NSObject {
         session.delegate = self
         serviceAdvertiser.delegate = self
         serviceBrowser.delegate = self
+#if os(iOS)
+        systemCallManager.delegate = self
+#endif
         
         serviceAdvertiser.startAdvertisingPeer()
         serviceBrowser.startBrowsingForPeers()
@@ -137,7 +152,11 @@ final class Model: NSObject {
         }
         
         if callPeerID == peerID {
-            stopCall()
+            finishCurrentCall(
+                notifyRemote: true,
+                reportToSystem: true,
+                systemEndReason: .failed
+            )
         }
         
         clearChatRequests(for: peerID)
@@ -196,26 +215,100 @@ final class Model: NSObject {
         
         callPeerID = chat.peer
         callState = .dialing
+        hasSentCallStart = false
         
-        sendControlMessage(
-            ConnectMessage(messageType: .CallStart),
-            to: [chat.peer]
-        )
+        let newCallID = UUID()
+        callID = newCallID
         
-        startCallAudioIfNeeded()
+#if os(iOS)
+        let displayName = displayName(for: chat.peer)
+        
+        systemCallManager.requestStartCall(callID: newCallID, handle: displayName) { [weak self] success in
+            guard let self else {
+                return
+            }
+            
+            guard self.callID == newCallID else {
+                return
+            }
+            
+            guard self.callPeerID == chat.peer else {
+                return
+            }
+            
+            if success {
+                return
+            }
+            
+            self.sendCallStart(to: chat.peer)
+        }
+#else
+        sendCallStart(to: chat.peer)
+#endif
     }
     
     func endCall() {
+        guard callPeerID != nil else {
+            return
+        }
+        
+#if os(iOS)
+        if let callID {
+            systemCallManager.requestEndCall(callID: callID) { [weak self] success in
+                guard let self else {
+                    return
+                }
+                
+                guard self.callID == callID else {
+                    return
+                }
+                
+                if success {
+                    return
+                }
+                
+                self.finishCurrentCall(notifyRemote: true, reportToSystem: false)
+            }
+            
+            return
+        }
+#endif
+        
+        finishCurrentCall(notifyRemote: true, reportToSystem: false)
+    }
+    
+    private func acceptCall() {
+        guard callState == .ringing else {
+            return
+        }
+        
         guard let callPeerID else {
             return
         }
         
         sendControlMessage(
-            ConnectMessage(messageType: .CallEnd),
+            ConnectMessage(messageType: .CallAccept),
             to: [callPeerID]
         )
         
-        stopCall()
+        activateCallSession()
+    }
+    
+    private func sendCallStart(to peer: MCPeerID) {
+        guard callState == .dialing else {
+            return
+        }
+        
+        guard hasSentCallStart == false else {
+            return
+        }
+        
+        hasSentCallStart = true
+        
+        sendControlMessage(
+            ConnectMessage(messageType: .CallStart),
+            to: [peer]
+        )
     }
     
     func hasPendingOutgoingChatRequest(to peer: MCPeerID) -> Bool {
@@ -456,14 +549,62 @@ final class Model: NSObject {
         
         callPeerID = peer
         
-        if callState == .idle {
-            callState = .dialing
+        guard callState != .active else {
+            return
         }
         
-        startCallAudioIfNeeded()
+        if callState == .dialing {
+            sendControlMessage(
+                ConnectMessage(messageType: .CallAccept),
+                to: [peer]
+            )
+            
+            activateCallSession()
+            return
+        }
+        
+        callState = .ringing
+        
+#if os(iOS)
+        let incomingCallID = callID ?? UUID()
+        callID = incomingCallID
+        
+        systemCallManager.reportIncomingCall(
+            callID: incomingCallID,
+            handle: displayName(for: peer)
+        ) { [weak self] success in
+            guard let self else {
+                return
+            }
+            
+            guard self.callID == incomingCallID else {
+                return
+            }
+            
+            if success {
+                return
+            }
+            
+            self.acceptCall()
+        }
+#else
+        acceptCall()
+#endif
     }
     
-    private func startCallAudioIfNeeded() {
+    private func receiveCallAccepted(from peer: MCPeerID) {
+        guard callPeerID == peer else {
+            return
+        }
+        
+        guard callState == .dialing else {
+            return
+        }
+        
+        activateCallSession()
+    }
+    
+    private func activateCallSession() {
         guard callPeerID != nil else {
             return
         }
@@ -472,14 +613,25 @@ final class Model: NSObject {
             return
         }
         
+        let previousState = callState
+        
         do {
             try configureCallAudioSession()
             try startCallRenderPipeline()
             try startCallCapturePipeline()
             callState = .active
+#if os(iOS)
+            if previousState == .dialing, let callID {
+                systemCallManager.reportOutgoingConnected(callID: callID)
+            }
+#endif
         } catch {
             print("Call audio setup failed:", error.localizedDescription)
-            stopCall()
+            finishCurrentCall(
+                notifyRemote: true,
+                reportToSystem: true,
+                systemEndReason: .failed
+            )
         }
     }
     
@@ -561,11 +713,49 @@ final class Model: NSObject {
 #endif
     }
     
-    private func stopCall() {
+    private func finishCurrentCall(
+        notifyRemote: Bool,
+        reportToSystem: Bool,
+        systemEndReason: SystemCallEndReason = .remoteEnded
+    ) {
+        let currentPeerID = callPeerID
+        let currentCallID = callID
+        
+        if notifyRemote, let currentPeerID {
+            sendControlMessage(
+                ConnectMessage(messageType: .CallEnd),
+                to: [currentPeerID]
+            )
+        }
+        
         stopCallAudioPipelines()
         callState = .idle
         callPeerID = nil
+        callID = nil
+        hasSentCallStart = false
+        
+#if os(iOS)
+        if reportToSystem, let currentCallID {
+            systemCallManager.reportEnded(
+                callID: currentCallID,
+                reason: mapSystemEndReason(systemEndReason)
+            )
+        }
+#endif
     }
+    
+#if os(iOS)
+    private func mapSystemEndReason(_ reason: SystemCallEndReason) -> CXCallEndedReason {
+        switch reason {
+        case .remoteEnded:
+            .remoteEnded
+        case .failed:
+            .failed
+        case .unanswered:
+            .unanswered
+        }
+    }
+#endif
     
     nonisolated private static func sendCallAudioPayload(
         _ audioData: Data,
@@ -769,12 +959,19 @@ final class Model: NSObject {
         case .CallStart:
             receiveCallStart(from: from)
             
+        case .CallAccept:
+            receiveCallAccepted(from: from)
+            
         case .CallEnd:
             guard callPeerID == from else {
                 return
             }
             
-            stopCall()
+            finishCurrentCall(
+                notifyRemote: false,
+                reportToSystem: true,
+                systemEndReason: .remoteEnded
+            )
         }
     }
     
@@ -824,7 +1021,11 @@ final class Model: NSObject {
         print(peer.displayName, "has disconnected")
         
         if callPeerID == peer {
-            stopCall()
+            finishCurrentCall(
+                notifyRemote: false,
+                reportToSystem: true,
+                systemEndReason: .remoteEnded
+            )
         }
         
         session.disconnect()
@@ -1001,7 +1202,11 @@ extension Model {
         serviceAdvertiser.stopAdvertisingPeer()
         
         session.disconnect()
-        stopCall()
+        finishCurrentCall(
+            notifyRemote: true,
+            reportToSystem: true,
+            systemEndReason: .failed
+        )
         
         chats.removeAll()
         connectedPeers.removeAll()
@@ -1093,6 +1298,47 @@ nonisolated extension Model: MCSessionDelegate {
     }
 }
 
+#if os(iOS)
+@MainActor
+extension Model: SystemCallManagerDelegate {
+    func systemCallManagerDidStartCall(_ callID: UUID) {
+        guard self.callID == callID else {
+            return
+        }
+        
+        guard let callPeerID else {
+            return
+        }
+        
+        sendCallStart(to: callPeerID)
+    }
+    
+    func systemCallManagerDidAnswerCall(_ callID: UUID) {
+        guard self.callID == callID else {
+            return
+        }
+        
+        acceptCall()
+    }
+    
+    func systemCallManagerDidEndCall(_ callID: UUID) {
+        guard self.callID == callID else {
+            return
+        }
+        
+        finishCurrentCall(notifyRemote: true, reportToSystem: false)
+    }
+    
+    func systemCallManagerDidReset() {
+        guard callPeerID != nil else {
+            return
+        }
+        
+        finishCurrentCall(notifyRemote: false, reportToSystem: false)
+    }
+}
+#endif
+
 @MainActor
 private extension Model {
     func foundPeer(_ peerID: MCPeerID) {
@@ -1130,7 +1376,11 @@ private extension Model {
             clearChatRequests(for: peerID)
             
             if callPeerID == peerID {
-                stopCall()
+                finishCurrentCall(
+                    notifyRemote: false,
+                    reportToSystem: true,
+                    systemEndReason: .failed
+                )
             }
         }
         

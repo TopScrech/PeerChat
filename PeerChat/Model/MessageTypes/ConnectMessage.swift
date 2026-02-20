@@ -9,6 +9,7 @@ struct ConnectMessage: Codable {
              ChatRequest,
              ChatRequestResponse,
              CallStart,
+             CallAccept,
              CallEnd
     }
     

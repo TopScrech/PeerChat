@@ -375,6 +375,9 @@
 				INFOPLIST_FILE = PeerChat/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Peer Chat";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Multipeer Connectivity";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record and send voice messages";
+				INFOPLIST_KEY_NSVoIPUsageDescription = Calls;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -406,6 +409,9 @@
 				INFOPLIST_FILE = PeerChat/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Peer Chat";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Multipeer Connectivity";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record and send voice messages";
+				INFOPLIST_KEY_NSVoIPUsageDescription = Calls;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
