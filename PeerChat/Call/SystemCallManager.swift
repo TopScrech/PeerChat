@@ -8,6 +8,8 @@ protocol SystemCallManagerDelegate: AnyObject {
     func systemCallManagerDidStartCall(_ callID: UUID)
     func systemCallManagerDidAnswerCall(_ callID: UUID)
     func systemCallManagerDidEndCall(_ callID: UUID)
+    func systemCallManagerDidActivateAudioSession()
+    func systemCallManagerDidDeactivateAudioSession()
     func systemCallManagerDidReset()
 }
 
@@ -124,6 +126,18 @@ extension SystemCallManager: CXProviderDelegate {
         
         Task { @MainActor [weak self] in
             self?.delegate?.systemCallManagerDidEndCall(callID)
+        }
+    }
+
+    nonisolated func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
+        Task { @MainActor [weak self] in
+            self?.delegate?.systemCallManagerDidActivateAudioSession()
+        }
+    }
+
+    nonisolated func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
+        Task { @MainActor [weak self] in
+            self?.delegate?.systemCallManagerDidDeactivateAudioSession()
         }
     }
 }

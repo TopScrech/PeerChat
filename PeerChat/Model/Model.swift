@@ -66,6 +66,12 @@ final class Model: NSObject {
     @ObservationIgnored private var callID: UUID?
     @ObservationIgnored private var hasSentCallStart = false
 #if os(iOS)
+    @ObservationIgnored private var isSystemCallManaged = false
+    @ObservationIgnored private var isSystemAudioSessionActive = false
+    @ObservationIgnored private var hasPendingCallActivation = false
+    @ObservationIgnored private var pendingCallActivationWasDialing = false
+#endif
+#if os(iOS)
     @ObservationIgnored private let systemCallManager = SystemCallManager()
 #endif
     
@@ -216,6 +222,12 @@ final class Model: NSObject {
         callPeerID = chat.peer
         callState = .dialing
         hasSentCallStart = false
+#if os(iOS)
+        isSystemCallManaged = false
+        isSystemAudioSessionActive = false
+        hasPendingCallActivation = false
+        pendingCallActivationWasDialing = false
+#endif
         
         let newCallID = UUID()
         callID = newCallID
@@ -237,6 +249,7 @@ final class Model: NSObject {
             }
             
             if success {
+                self.isSystemCallManaged = true
                 return
             }
             
@@ -253,7 +266,7 @@ final class Model: NSObject {
         }
         
 #if os(iOS)
-        if let callID {
+        if isSystemCallManaged, let callID {
             systemCallManager.requestEndCall(callID: callID) { [weak self] success in
                 guard let self else {
                     return
@@ -564,7 +577,12 @@ final class Model: NSObject {
         }
         
         callState = .ringing
-        
+#if os(iOS)
+        hasPendingCallActivation = false
+        pendingCallActivationWasDialing = false
+        isSystemAudioSessionActive = false
+#endif
+
 #if os(iOS)
         let incomingCallID = callID ?? UUID()
         callID = incomingCallID
@@ -582,9 +600,11 @@ final class Model: NSObject {
             }
             
             if success {
+                self.isSystemCallManaged = true
                 return
             }
             
+            self.isSystemCallManaged = false
             self.acceptCall()
         }
 #else
@@ -612,8 +632,41 @@ final class Model: NSObject {
         guard callState != .active else {
             return
         }
-        
-        let previousState = callState
+
+#if os(iOS)
+        if isSystemCallManaged {
+            hasPendingCallActivation = true
+            pendingCallActivationWasDialing = callState == .dialing
+            activatePendingSystemCallIfPossible()
+            return
+        }
+#endif
+
+        activateCallPipelines(wasDialing: callState == .dialing)
+    }
+
+#if os(iOS)
+    private func activatePendingSystemCallIfPossible() {
+        guard hasPendingCallActivation else {
+            return
+        }
+
+        guard isSystemCallManaged else {
+            return
+        }
+
+        guard isSystemAudioSessionActive else {
+            return
+        }
+
+        let wasDialing = pendingCallActivationWasDialing
+        hasPendingCallActivation = false
+        pendingCallActivationWasDialing = false
+        activateCallPipelines(wasDialing: wasDialing)
+    }
+#endif
+
+    private func activateCallPipelines(wasDialing: Bool) {
         
         do {
             try configureCallAudioSession()
@@ -621,7 +674,7 @@ final class Model: NSObject {
             try startCallCapturePipeline()
             callState = .active
 #if os(iOS)
-            if previousState == .dialing, let callID {
+            if wasDialing, isSystemCallManaged, let callID {
                 systemCallManager.reportOutgoingConnected(callID: callID)
             }
 #endif
@@ -644,9 +697,21 @@ final class Model: NSObject {
             mode: .voiceChat,
             options: [.allowBluetoothHFP, .allowBluetoothA2DP, .defaultToSpeaker]
         )
-        try audioSession.setPreferredSampleRate(callAudioFormat.sampleRate)
-        try audioSession.setPreferredIOBufferDuration(0.02)
-        try audioSession.setActive(true)
+        do {
+            try audioSession.setPreferredSampleRate(callAudioFormat.sampleRate)
+        } catch {
+            print("Failed to set preferred sample rate:", error.localizedDescription)
+        }
+
+        do {
+            try audioSession.setPreferredIOBufferDuration(0.02)
+        } catch {
+            print("Failed to set preferred IO buffer duration:", error.localizedDescription)
+        }
+
+        if isSystemCallManaged == false {
+            try audioSession.setActive(true)
+        }
 #endif
     }
     
@@ -698,17 +763,19 @@ final class Model: NSObject {
         }
     }
     
-    private func stopCallAudioPipelines() {
+    private func stopCallAudioPipelines(deactivateAudioSession: Bool) {
         callCaptureEngine.inputNode.removeTap(onBus: 0)
         callCaptureEngine.stop()
         callRenderEngine.stop()
         callPlayerNode.stop()
         
 #if os(iOS)
-        do {
-            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-        } catch {
-            print("Failed to deactivate audio session:", error.localizedDescription)
+        if deactivateAudioSession {
+            do {
+                try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            } catch {
+                print("Failed to deactivate audio session:", error.localizedDescription)
+            }
         }
 #endif
     }
@@ -720,6 +787,9 @@ final class Model: NSObject {
     ) {
         let currentPeerID = callPeerID
         let currentCallID = callID
+#if os(iOS)
+        let currentSystemCallManaged = isSystemCallManaged
+#endif
         
         if notifyRemote, let currentPeerID {
             sendControlMessage(
@@ -728,14 +798,26 @@ final class Model: NSObject {
             )
         }
         
-        stopCallAudioPipelines()
+#if os(iOS)
+        let shouldDeactivateAudioSession = currentSystemCallManaged == false
+#else
+        let shouldDeactivateAudioSession = false
+#endif
+
+        stopCallAudioPipelines(deactivateAudioSession: shouldDeactivateAudioSession)
         callState = .idle
         callPeerID = nil
         callID = nil
         hasSentCallStart = false
+#if os(iOS)
+        isSystemCallManaged = false
+        isSystemAudioSessionActive = false
+        hasPendingCallActivation = false
+        pendingCallActivationWasDialing = false
+#endif
         
 #if os(iOS)
-        if reportToSystem, let currentCallID {
+        if reportToSystem, currentSystemCallManaged, let currentCallID {
             systemCallManager.reportEnded(
                 callID: currentCallID,
                 reason: mapSystemEndReason(systemEndReason)
@@ -1334,7 +1416,17 @@ extension Model: SystemCallManagerDelegate {
             return
         }
         
+        isSystemAudioSessionActive = false
         finishCurrentCall(notifyRemote: false, reportToSystem: false)
+    }
+
+    func systemCallManagerDidActivateAudioSession() {
+        isSystemAudioSessionActive = true
+        activatePendingSystemCallIfPossible()
+    }
+
+    func systemCallManagerDidDeactivateAudioSession() {
+        isSystemAudioSessionActive = false
     }
 }
 #endif
