@@ -1,9 +1,44 @@
 import ScrechKit
+@preconcurrency import AVFoundation
+import Observation
 @preconcurrency import MultipeerConnectivity
 import SwiftoCrypto
 
+private final class CallConversionInputSource {
+    nonisolated(unsafe) private var didProvideBuffer = false
+    nonisolated(unsafe) private let buffer: AVAudioPCMBuffer
+    
+    nonisolated init(buffer: AVAudioPCMBuffer) {
+        self.buffer = buffer
+    }
+    
+    nonisolated func nextBuffer(status: UnsafeMutablePointer<AVAudioConverterInputStatus>) -> AVAudioBuffer? {
+        if didProvideBuffer {
+            status.pointee = .noDataNow
+            return nil
+        }
+        
+        didProvideBuffer = true
+        status.pointee = .haveData
+        return buffer
+    }
+}
+
 @Observable
 final class Model: NSObject {
+    enum CallState: String {
+        case idle, dialing, active
+    }
+    
+    private enum SessionPayloadType: UInt8 {
+        case control = 1
+        case voipAudio = 2
+    }
+    
+    private enum CallAudioPipelineError: Error {
+        case unsupportedCaptureFormat
+    }
+    
     private let serviceType = "PeerChat"
     let maxAttachmentBytes = 10 * 1024 * 1024
     private let myPeerId = MCPeerID(displayName: ValueStore().nickname)
@@ -16,10 +51,17 @@ final class Model: NSObject {
     private var outgoingChatRequestIDs: [MCPeerID: UUID] = [:]
     private var incomingChatRequestIDs: [MCPeerID: UUID] = [:]
     private var pendingActivationPeers: Set<MCPeerID> = []
+    @ObservationIgnored private let callCaptureEngine = AVAudioEngine()
+    @ObservationIgnored private let callRenderEngine = AVAudioEngine()
+    @ObservationIgnored private let callPlayerNode = AVAudioPlayerNode()
+    @ObservationIgnored private var callRenderConfigured = false
+    @ObservationIgnored private let callAudioFormat: AVAudioFormat
     
     var connectedPeers: [MCPeerID] = []
     var chats: [DuoChat] = []
     var chatRouteID: UUID?
+    var callState: CallState = .idle
+    var callPeerID: MCPeerID?
     
     var myPerson: Person
     var crypto: CryptoModel
@@ -27,6 +69,17 @@ final class Model: NSObject {
     
     init(_ crypto: CryptoModel) {
         self.crypto = crypto
+        
+        guard let callAudioFormat = AVAudioFormat(
+            commonFormat: .pcmFormatInt16,
+            sampleRate: 24_000.0,
+            channels: 1,
+            interleaved: true
+        ) else {
+            fatalError("Failed to create call audio format")
+        }
+        
+        self.callAudioFormat = callAudioFormat
         
         session = MCSession(
             peer: myPeerId,
@@ -83,6 +136,10 @@ final class Model: NSObject {
             connectedPeers.remove(at: index)
         }
         
+        if callPeerID == peerID {
+            stopCall()
+        }
+        
         clearChatRequests(for: peerID)
         
         session.cancelConnectPeer(peerID)
@@ -106,6 +163,59 @@ final class Model: NSObject {
     
     func displayName(for peer: MCPeerID) -> String {
         chats.first(where: { $0.chat.peer == peer })?.person.name ?? peer.displayName
+    }
+    
+    var callDisplayName: String {
+        guard let callPeerID else {
+            return ""
+        }
+        
+        return displayName(for: callPeerID)
+    }
+    
+    func isInCall(with person: Person) -> Bool {
+        guard callState != .idle else {
+            return false
+        }
+        
+        return chats.first(where: { $0.person.id == person.id })?.chat.peer == callPeerID
+    }
+    
+    func startCall(with person: Person) {
+        guard callState == .idle else {
+            return
+        }
+        
+        guard let chat = chats.first(where: { $0.person.id == person.id })?.chat else {
+            return
+        }
+        
+        guard session.connectedPeers.contains(chat.peer) else {
+            return
+        }
+        
+        callPeerID = chat.peer
+        callState = .dialing
+        
+        sendControlMessage(
+            ConnectMessage(messageType: .CallStart),
+            to: [chat.peer]
+        )
+        
+        startCallAudioIfNeeded()
+    }
+    
+    func endCall() {
+        guard let callPeerID else {
+            return
+        }
+        
+        sendControlMessage(
+            ConnectMessage(messageType: .CallEnd),
+            to: [callPeerID]
+        )
+        
+        stopCall()
     }
     
     func hasPendingOutgoingChatRequest(to peer: MCPeerID) -> Bool {
@@ -157,13 +267,8 @@ final class Model: NSObject {
             chatRequest: request
         )
         
-        do {
-            let data = try encoder.encode(requestMessage)
-            try session.send(data, toPeers: [peer], with: .reliable)
-            outgoingChatRequestIDs[peer] = request.id
-        } catch {
-            print("Error sending chat request:", error)
-        }
+        sendControlMessage(requestMessage, to: [peer])
+        outgoingChatRequestIDs[peer] = request.id
     }
     
     func respondToChatRequest(from peer: MCPeerID, accept: Bool) {
@@ -182,13 +287,7 @@ final class Model: NSObject {
     func sendCloseChatMessage(to peer: MCPeerID) {
         let closeMessage = ConnectMessage(messageType: .CloseChat, peerInfo: nil, message: nil)
         
-        do {
-            let data = try encoder.encode(closeMessage)
-            
-            try session.send(data, toPeers: [peer], with: .reliable)
-        } catch {
-            print("Error sending close chat message:", error)
-        }
+        sendControlMessage(closeMessage, to: [peer])
     }
     
     func sendDeleteRequest(_ id: UUID, to person: Person) {
@@ -207,12 +306,7 @@ final class Model: NSObject {
         
         let peer = duoChat.chat.peer
         
-        do {
-            let data = try encoder.encode(deleteMessage)
-            try session.send(data, toPeers: [peer], with: .reliable)
-        } catch {
-            print("Error sending delete message:", error)
-        }
+        sendControlMessage(deleteMessage, to: [peer])
     }
     
     func send(_ messageText: String, chat: Chat) {
@@ -295,17 +389,312 @@ final class Model: NSObject {
             return
         }
         
-        do {
-            if let data = try? encoder.encode(newMessage) {
-                if let index = chats.firstIndex(where: { $0.person.id == chat.person.id }) {
-                    chats[index].chat.messages.append(message)
-                }
-                
-                try session.send(data, toPeers: [chat.peer], with: .reliable)
-            }
-        } catch {
-            print("Error for sending:", error.localizedDescription)
+        if let index = chats.firstIndex(where: { $0.person.id == chat.person.id }) {
+            chats[index].chat.messages.append(message)
         }
+        
+        sendControlMessage(newMessage, to: [chat.peer])
+    }
+    
+    private func sendControlMessage(
+        _ message: ConnectMessage,
+        to peers: [MCPeerID],
+        mode: MCSessionSendDataMode = .reliable
+    ) {
+        guard peers.isEmpty == false else {
+            return
+        }
+        
+        do {
+            let body = try encoder.encode(message)
+            sendPayload(body, type: .control, to: peers, mode: mode)
+        } catch {
+            print("Control message encode failed:", error.localizedDescription)
+        }
+    }
+    
+    private func sendPayload(
+        _ body: Data,
+        type: SessionPayloadType,
+        to peers: [MCPeerID],
+        mode: MCSessionSendDataMode
+    ) {
+        guard peers.isEmpty == false else {
+            return
+        }
+        
+        var payload = Data([type.rawValue])
+        payload.append(body)
+        
+        do {
+            try session.send(payload, toPeers: peers, with: mode)
+        } catch {
+            print("Session send failed:", error.localizedDescription)
+        }
+    }
+    
+    private func decodePayload(_ data: Data) -> (type: SessionPayloadType, body: Data)? {
+        guard let kindByte = data.first else {
+            return nil
+        }
+        
+        guard let type = SessionPayloadType(rawValue: kindByte) else {
+            return nil
+        }
+        
+        return (type, Data(data.dropFirst()))
+    }
+    
+    private func receiveCallStart(from peer: MCPeerID) {
+        guard session.connectedPeers.contains(peer) else {
+            return
+        }
+        
+        if let callPeerID, callPeerID != peer {
+            return
+        }
+        
+        callPeerID = peer
+        
+        if callState == .idle {
+            callState = .dialing
+        }
+        
+        startCallAudioIfNeeded()
+    }
+    
+    private func startCallAudioIfNeeded() {
+        guard callPeerID != nil else {
+            return
+        }
+        
+        guard callState != .active else {
+            return
+        }
+        
+        do {
+            try configureCallAudioSession()
+            try startCallRenderPipeline()
+            try startCallCapturePipeline()
+            callState = .active
+        } catch {
+            print("Call audio setup failed:", error.localizedDescription)
+            stopCall()
+        }
+    }
+    
+    private func configureCallAudioSession() throws {
+#if os(iOS)
+        let audioSession = AVAudioSession.sharedInstance()
+        
+        try audioSession.setCategory(
+            .playAndRecord,
+            mode: .voiceChat,
+            options: [.allowBluetoothHFP, .allowBluetoothA2DP, .defaultToSpeaker]
+        )
+        try audioSession.setPreferredSampleRate(callAudioFormat.sampleRate)
+        try audioSession.setPreferredIOBufferDuration(0.02)
+        try audioSession.setActive(true)
+#endif
+    }
+    
+    private func startCallRenderPipeline() throws {
+        if callRenderConfigured == false {
+            callRenderEngine.attach(callPlayerNode)
+            callRenderEngine.connect(callPlayerNode, to: callRenderEngine.mainMixerNode, format: callAudioFormat)
+            callRenderConfigured = true
+        }
+        
+        if callRenderEngine.isRunning == false {
+            callRenderEngine.prepare()
+            try callRenderEngine.start()
+        }
+        
+        if callPlayerNode.isPlaying == false {
+            callPlayerNode.play()
+        }
+    }
+    
+    private func startCallCapturePipeline() throws {
+        guard let callPeerID else {
+            return
+        }
+        
+        let inputNode = callCaptureEngine.inputNode
+        let inputFormat = inputNode.outputFormat(forBus: 0)
+        let outputFormat = callAudioFormat
+        let session = self.session
+        
+        let converter = AVAudioConverter(from: inputFormat, to: outputFormat)
+        if converter == nil && Self.formatsMatch(inputFormat, outputFormat) == false {
+            throw CallAudioPipelineError.unsupportedCaptureFormat
+        }
+        
+        let tapHandler = Self.makeCaptureTapHandler(
+            session: session,
+            peerID: callPeerID,
+            converter: converter,
+            outputFormat: outputFormat
+        )
+        
+        inputNode.removeTap(onBus: 0)
+        inputNode.installTap(onBus: 0, bufferSize: 4096, format: inputFormat, block: tapHandler)
+        
+        if callCaptureEngine.isRunning == false {
+            callCaptureEngine.prepare()
+            try callCaptureEngine.start()
+        }
+    }
+    
+    private func stopCallAudioPipelines() {
+        callCaptureEngine.inputNode.removeTap(onBus: 0)
+        callCaptureEngine.stop()
+        callRenderEngine.stop()
+        callPlayerNode.stop()
+        
+#if os(iOS)
+        do {
+            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        } catch {
+            print("Failed to deactivate audio session:", error.localizedDescription)
+        }
+#endif
+    }
+    
+    private func stopCall() {
+        stopCallAudioPipelines()
+        callState = .idle
+        callPeerID = nil
+    }
+    
+    nonisolated private static func sendCallAudioPayload(
+        _ audioData: Data,
+        to peerID: MCPeerID,
+        session: MCSession
+    ) {
+        var payload = Data([SessionPayloadType.voipAudio.rawValue])
+        payload.append(audioData)
+        
+        do {
+            try session.send(payload, toPeers: [peerID], with: .unreliable)
+        } catch {
+            print("Session send failed:", error.localizedDescription)
+        }
+    }
+    
+    nonisolated private static func makeCaptureTapHandler(
+        session: MCSession,
+        peerID: MCPeerID,
+        converter: AVAudioConverter?,
+        outputFormat: AVAudioFormat
+    ) -> (AVAudioPCMBuffer, AVAudioTime) -> Void {
+        { buffer, _ in
+            guard let audioData = Self.makeCallAudioData(
+                from: buffer,
+                converter: converter,
+                outputFormat: outputFormat
+            ) else {
+                return
+            }
+            
+            Self.sendCallAudioPayload(audioData, to: peerID, session: session)
+        }
+    }
+    
+    nonisolated private static func makeCallAudioData(
+        from inputBuffer: AVAudioPCMBuffer,
+        converter: AVAudioConverter?,
+        outputFormat: AVAudioFormat
+    ) -> Data? {
+        let buffer: AVAudioPCMBuffer
+        
+        if let converter {
+            let frameRatio = outputFormat.sampleRate / inputBuffer.format.sampleRate
+            let outputFrameCapacity = max(
+                AVAudioFrameCount(Double(inputBuffer.frameLength) * frameRatio) + 1,
+                1
+            )
+            
+            guard let convertedBuffer = AVAudioPCMBuffer(
+                pcmFormat: outputFormat,
+                frameCapacity: outputFrameCapacity
+            ) else {
+                return nil
+            }
+            
+            let inputSource = CallConversionInputSource(buffer: inputBuffer)
+            var conversionError: NSError?
+            let status = converter.convert(to: convertedBuffer, error: &conversionError) { _, outStatus in
+                inputSource.nextBuffer(status: outStatus)
+            }
+            
+            guard status == .haveData || status == .inputRanDry else {
+                return nil
+            }
+            
+            buffer = convertedBuffer
+        } else {
+            buffer = inputBuffer
+        }
+        
+        guard let channelData = buffer.int16ChannelData else {
+            return nil
+        }
+        
+        let bytesPerFrame = Int(buffer.format.streamDescription.pointee.mBytesPerFrame)
+        let byteCount = Int(buffer.frameLength) * bytesPerFrame
+        
+        return Data(bytes: channelData[0], count: byteCount)
+    }
+    
+    nonisolated private static func formatsMatch(_ lhs: AVAudioFormat, _ rhs: AVAudioFormat) -> Bool {
+        lhs.commonFormat == rhs.commonFormat &&
+        lhs.sampleRate == rhs.sampleRate &&
+        lhs.channelCount == rhs.channelCount &&
+        lhs.isInterleaved == rhs.isInterleaved
+    }
+    
+    private func receiveCallAudio(_ data: Data, from peer: MCPeerID) {
+        guard callState == .active else {
+            return
+        }
+        
+        guard callPeerID == peer else {
+            return
+        }
+        
+        let bytesPerFrame = Int(callAudioFormat.streamDescription.pointee.mBytesPerFrame)
+        let frameLength = AVAudioFrameCount(data.count / bytesPerFrame)
+        
+        guard frameLength > 0 else {
+            return
+        }
+        
+        guard let buffer = AVAudioPCMBuffer(pcmFormat: callAudioFormat, frameCapacity: frameLength) else {
+            return
+        }
+        
+        guard let channelData = buffer.int16ChannelData else {
+            return
+        }
+        
+        buffer.frameLength = frameLength
+        data.copyBytes(
+            to: UnsafeMutableRawBufferPointer(
+                start: channelData[0],
+                count: data.count
+            )
+        )
+        
+        if callRenderEngine.isRunning == false {
+            try? callRenderEngine.start()
+        }
+        
+        if callPlayerNode.isPlaying == false {
+            callPlayerNode.play()
+        }
+        
+        callPlayerNode.scheduleBuffer(buffer)
     }
     
     func reciveInfo(info: ConnectMessage, from: MCPeerID, size: Int) {
@@ -376,6 +765,16 @@ final class Model: NSObject {
             }
             
             handleChatRequestResponse(response, from: from)
+            
+        case .CallStart:
+            receiveCallStart(from: from)
+            
+        case .CallEnd:
+            guard callPeerID == from else {
+                return
+            }
+            
+            stopCall()
         }
     }
     
@@ -424,6 +823,10 @@ final class Model: NSObject {
     func handleCloseChat(from peer: MCPeerID) {
         print(peer.displayName, "has disconnected")
         
+        if callPeerID == peer {
+            stopCall()
+        }
+        
         session.disconnect()
         clearChatRequests(for: peer)
         changeState.toggle()
@@ -454,12 +857,7 @@ final class Model: NSObject {
             )
         )
         
-        do {
-            let data = try encoder.encode(response)
-            try session.send(data, toPeers: [peer], with: .reliable)
-        } catch {
-            print("Error sending chat response:", error)
-        }
+        sendControlMessage(response, to: [peer])
     }
     
     private func activateChat(with peer: MCPeerID, shouldRoute: Bool) {
@@ -499,13 +897,7 @@ final class Model: NSObject {
         
         let newMessage = ConnectMessage(messageType: .PeerInfo, peerInfo: self.myPerson)
         
-        do {
-            if let data = try? encoder.encode(newMessage) {
-                try session.send(data, toPeers: [peer], with: .reliable)
-            }
-        } catch {
-            print("Error for newConnection:", String(describing: error))
-        }
+        sendControlMessage(newMessage, to: [peer])
     }
     
     func newPerson(person: Person, from: MCPeerID) {
@@ -582,7 +974,7 @@ final class Model: NSObject {
     }
 }
 
-extension Model: MCNearbyServiceAdvertiserDelegate {
+nonisolated extension Model: MCNearbyServiceAdvertiserDelegate {
     nonisolated func advertiser(
         _ advertiser: MCNearbyServiceAdvertiser,
         didNotStartAdvertisingPeer error: Error
@@ -609,6 +1001,7 @@ extension Model {
         serviceAdvertiser.stopAdvertisingPeer()
         
         session.disconnect()
+        stopCall()
         
         chats.removeAll()
         connectedPeers.removeAll()
@@ -623,7 +1016,7 @@ extension Model {
     }
 }
 
-extension Model: MCNearbyServiceBrowserDelegate {
+nonisolated extension Model: MCNearbyServiceBrowserDelegate {
     nonisolated func browser(
         _ browser: MCNearbyServiceBrowser,
         didNotStartBrowsingForPeers error: Error)
@@ -650,7 +1043,7 @@ extension Model: MCNearbyServiceBrowserDelegate {
     }
 }
 
-extension Model: MCSessionDelegate {
+nonisolated extension Model: MCSessionDelegate {
     nonisolated func session(
         _ session: MCSession,
         peer peerID: MCPeerID,
@@ -735,6 +1128,10 @@ private extension Model {
         if state == .notConnected {
             invitedPeers.remove(peerID)
             clearChatRequests(for: peerID)
+            
+            if callPeerID == peerID {
+                stopCall()
+            }
         }
         
         connectedPeers = session.connectedPeers
@@ -743,6 +1140,24 @@ private extension Model {
     func didReceiveData(_ data: Data, from peerID: MCPeerID) {
         guard session.connectedPeers.contains(peerID) else {
             print("Ignoring data from disconnected peer:", peerID.displayName)
+            return
+        }
+        
+        if let payload = decodePayload(data) {
+            switch payload.type {
+            case .control:
+                if let message = try? decoder.decode(ConnectMessage.self, from: payload.body) {
+                    reciveInfo(
+                        info: message,
+                        from: peerID,
+                        size: payload.body.count
+                    )
+                }
+                
+            case .voipAudio:
+                receiveCallAudio(payload.body, from: peerID)
+            }
+            
             return
         }
         

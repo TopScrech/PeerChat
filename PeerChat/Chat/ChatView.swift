@@ -62,6 +62,16 @@ struct ChatView: View {
 #if os(macOS)
             ToolbarItem {
                 Menu {
+                    if model.isInCall(with: person) {
+                        Button("End Call", systemImage: "phone.down", role: .destructive) {
+                            model.endCall()
+                        }
+                    } else {
+                        Button("Call", systemImage: "phone") {
+                            model.startCall(with: person)
+                        }
+                    }
+                    
                     Button("Clear All Messages", systemImage: "trash", role: .destructive) {
                         model.clearAllMessages(for: person)
                     }
@@ -77,6 +87,16 @@ struct ChatView: View {
 #else
             ToolbarItem(placement: .topBarTrailing) {
                 Menu {
+                    if model.isInCall(with: person) {
+                        Button("End Call", systemImage: "phone.down", role: .destructive) {
+                            model.endCall()
+                        }
+                    } else {
+                        Button("Call", systemImage: "phone") {
+                            model.startCall(with: person)
+                        }
+                    }
+                    
                     Button("Clear All Messages", systemImage: "trash", role: .destructive) {
                         model.clearAllMessages(for: person)
                     }

@@ -32,7 +32,7 @@
 		40EBFCE22A16E82D0041012C /* iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F3365B6A2F43D61A00824B1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F366E1612F47610E000F8F30 /* macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F3D854952F4508DE00B2A3F7 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		F366E5F12F47D8CC000F8F30 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -101,7 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				F3365B6A2F43D61A00824B1C /* README.md */,
-				F3D854952F4508DE00B2A3F7 /* LICENSE */,
+				F366E5F12F47D8CC000F8F30 /* LICENSE.txt */,
 				F3365B4E2F43D4F300824B1C /* PeerChat */,
 				F366E1622F47610E000F8F30 /* macOS */,
 				40EBFCE32A16E82D0041012C /* Products */,

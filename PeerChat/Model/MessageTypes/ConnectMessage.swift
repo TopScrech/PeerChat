@@ -7,7 +7,9 @@ struct ConnectMessage: Codable {
              CloseChat,
              DeleteMessage,
              ChatRequest,
-             ChatRequestResponse
+             ChatRequestResponse,
+             CallStart,
+             CallEnd
     }
     
     var messageType: MessageType = .Message
