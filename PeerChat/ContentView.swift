@@ -75,5 +75,10 @@ struct ContentView: View {
 #endif
             }
         }
+        .safeAreaInset(edge: .top) {
+            if model.callState != .idle {
+                InCallControlsView()
+            }
+        }
     }
 }

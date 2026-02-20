@@ -65,6 +65,7 @@ final class Model: NSObject {
     @ObservationIgnored private let callAudioFormat: AVAudioFormat
     @ObservationIgnored private var callID: UUID?
     @ObservationIgnored private var hasSentCallStart = false
+    nonisolated(unsafe) private var callCaptureMuted = false
 #if os(iOS)
     @ObservationIgnored private var isSystemCallManaged = false
     @ObservationIgnored private var isSystemAudioSessionActive = false
@@ -80,6 +81,7 @@ final class Model: NSObject {
     var chatRouteID: UUID?
     var callState: CallState = .idle
     var callPeerID: MCPeerID?
+    var isMicrophoneMuted = false
     
     var myPerson: Person
     var crypto: CryptoModel
@@ -222,6 +224,8 @@ final class Model: NSObject {
         callPeerID = chat.peer
         callState = .dialing
         hasSentCallStart = false
+        isMicrophoneMuted = false
+        callCaptureMuted = false
 #if os(iOS)
         isSystemCallManaged = false
         isSystemAudioSessionActive = false
@@ -288,6 +292,12 @@ final class Model: NSObject {
 #endif
         
         finishCurrentCall(notifyRemote: true, reportToSystem: false)
+    }
+
+    func toggleMicrophoneMuted() {
+        let nextValue = isMicrophoneMuted == false
+        isMicrophoneMuted = nextValue
+        callCaptureMuted = nextValue
     }
     
     private func acceptCall() {
@@ -751,7 +761,14 @@ final class Model: NSObject {
             session: session,
             peerID: callPeerID,
             converter: converter,
-            outputFormat: outputFormat
+            outputFormat: outputFormat,
+            isMuted: { [weak self] in
+                guard let self else {
+                    return false
+                }
+
+                return self.callCaptureMuted
+            }
         )
         
         inputNode.removeTap(onBus: 0)
@@ -809,6 +826,8 @@ final class Model: NSObject {
         callPeerID = nil
         callID = nil
         hasSentCallStart = false
+        isMicrophoneMuted = false
+        callCaptureMuted = false
 #if os(iOS)
         isSystemCallManaged = false
         isSystemAudioSessionActive = false
@@ -858,9 +877,14 @@ final class Model: NSObject {
         session: MCSession,
         peerID: MCPeerID,
         converter: AVAudioConverter?,
-        outputFormat: AVAudioFormat
+        outputFormat: AVAudioFormat,
+        isMuted: @escaping () -> Bool
     ) -> (AVAudioPCMBuffer, AVAudioTime) -> Void {
         { buffer, _ in
+            if isMuted() {
+                return
+            }
+
             guard let audioData = Self.makeCallAudioData(
                 from: buffer,
                 converter: converter,
