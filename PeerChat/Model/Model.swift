@@ -65,7 +65,7 @@ final class Model: NSObject {
     @ObservationIgnored private let callAudioFormat: AVAudioFormat
     @ObservationIgnored private var callID: UUID?
     @ObservationIgnored private var hasSentCallStart = false
-    nonisolated(unsafe) private var callCaptureMuted = false
+    private var callCaptureMuted = false
 #if os(iOS)
     @ObservationIgnored private var isSystemCallManaged = false
     @ObservationIgnored private var isSystemAudioSessionActive = false
