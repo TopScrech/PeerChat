@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 90;
+	objectVersion = 100;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -178,7 +178,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2630;
-				LastUpgradeCheck = 2630;
+				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					40EBFCE12A16E82D0041012C = {
 						CreatedOnToolsVersion = 14.2;
@@ -202,7 +202,7 @@
 				F3D854922F44DCB900B2A3F7 /* XCRemoteSwiftPackageReference "DeviceKit" */,
 				F366E1522F470866000F8F30 /* XCRemoteSwiftPackageReference "QuickLooking" */,
 			);
-			preferredProjectObjectVersion = 90;
+			preferredProjectObjectVersion = 100;
 			productRefGroup = 40EBFCE32A16E82D0041012C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
