@@ -24,14 +24,18 @@ struct MessageComposer: View {
     
     var body: some View {
         HStack {
+#if !os(tvOS)
             Button("Attach", systemImage: "paperclip", action: onPickFile)
                 .labelStyle(.iconOnly)
                 .title2()
                 .secondary()
+#endif
             
             TextField("Enter a message", text: $message)
                 .onSubmit(onSend)
+#if !os(tvOS)
                 .textFieldStyle(.roundedBorder)
+#endif
                 .animation(.spring, value: message)
             
             Button(isRecording ? "Stop Recording" : "Record Voice", systemImage: isRecording ? "stop.circle.fill" : "mic.circle.fill", action: onRecordTapped)
@@ -48,12 +52,14 @@ struct MessageComposer: View {
             }
         }
         .padding()
+#if !os(tvOS)
         .fileImporter(
             isPresented: $isShowingFilePicker,
             allowedContentTypes: [.item],
             allowsMultipleSelection: false,
             onCompletion: handleFileSelection
         )
+#endif
         .alert("Could Not Send", isPresented: $showError) {
             Button("OK", role: .cancel) { }
         } message: {

@@ -50,7 +50,7 @@ struct FileMessageBubble: View {
             prepareFile()
         }
         .onDisappear(perform: cleanupPreparedFile)
-#if !os(macOS)
+#if canImport(QuickLooking) && !os(macOS)
         .sheet(item: $previewItem) { preview in
             NavigationStack {
                 QuickLookView(preview.url)
@@ -86,7 +86,7 @@ struct FileMessageBubble: View {
         guard let preparedFile else { return }
 #if os(macOS)
         NSWorkspace.shared.open(preparedFile.url)
-#else
+#elseif canImport(QuickLooking)
         previewItem = .init(
             url: preparedFile.url,
             title: preparedFile.fileName

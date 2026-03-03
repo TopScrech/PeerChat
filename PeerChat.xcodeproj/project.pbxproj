@@ -7,10 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F311887A2BF90FBF0079A5FE /* ScrechKit in Frameworks */ = {isa = PBXBuildFile; productRef = F31188792BF90FBF0079A5FE /* ScrechKit */; };
-		F366E1542F470866000F8F30 /* QuickLooking in Frameworks */ = {isa = PBXBuildFile; productRef = F366E1532F470866000F8F30 /* QuickLooking */; };
-		F36700012F47990000F8F30 /* ScrechKit in Frameworks */ = {isa = PBXBuildFile; productRef = F31188792BF90FBF0079A5FE /* ScrechKit */; };
-		F36700022F47990000F8F30 /* QuickLooking in Frameworks */ = {isa = PBXBuildFile; productRef = F366E1532F470866000F8F30 /* QuickLooking */; };
+			F311887A2BF90FBF0079A5FE /* ScrechKit in Frameworks */ = {isa = PBXBuildFile; productRef = F31188792BF90FBF0079A5FE /* ScrechKit */; };
+			F381100B2F50000100A1B2C3 /* ScrechKit in Frameworks */ = {isa = PBXBuildFile; productRef = F31188792BF90FBF0079A5FE /* ScrechKit */; };
+			F381100C2F50000100A1B2C3 /* Swifto Crypto in Frameworks */ = {isa = PBXBuildFile; productRef = F36ACB392BF9E00A00B5744A /* Swifto Crypto */; };
+			F381100D2F50000100A1B2C3 /* DeviceKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3D854932F44DCB900B2A3F7 /* DeviceKit */; };
+			F381101B2F50000100A1B2C3 /* ScrechKit in Frameworks */ = {isa = PBXBuildFile; productRef = F31188792BF90FBF0079A5FE /* ScrechKit */; };
+			F381101C2F50000100A1B2C3 /* Swifto Crypto in Frameworks */ = {isa = PBXBuildFile; productRef = F36ACB392BF9E00A00B5744A /* Swifto Crypto */; };
+			F366E1542F470866000F8F30 /* QuickLooking in Frameworks */ = {isa = PBXBuildFile; productRef = F366E1532F470866000F8F30 /* QuickLooking */; };
+			F36700012F47990000F8F30 /* ScrechKit in Frameworks */ = {isa = PBXBuildFile; productRef = F31188792BF90FBF0079A5FE /* ScrechKit */; };
+			F36700022F47990000F8F30 /* QuickLooking in Frameworks */ = {isa = PBXBuildFile; productRef = F366E1532F470866000F8F30 /* QuickLooking */; };
 		F36700032F47990000F8F30 /* Swifto Crypto in Frameworks */ = {isa = PBXBuildFile; productRef = F36ACB392BF9E00A00B5744A /* Swifto Crypto */; };
 		F36700042F47990000F8F30 /* DeviceKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3D854932F44DCB900B2A3F7 /* DeviceKit */; };
 		F36ACB3A2BF9E00A00B5744A /* Swifto Crypto in Frameworks */ = {isa = PBXBuildFile; productRef = F36ACB392BF9E00A00B5744A /* Swifto Crypto */; };
@@ -18,37 +23,73 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		40EBFCFC2A16E9E70041012C /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			dstPath = "";
-			dstSubfolder = Frameworks;
+			40EBFCFC2A16E9E70041012C /* Embed Frameworks */ = {
+				isa = PBXCopyFilesBuildPhase;
+				dstPath = "";
+				dstSubfolder = Frameworks;
 			files = (
-			);
-			name = "Embed Frameworks";
-		};
+				);
+				name = "Embed Frameworks";
+			};
+			F38110062F50000100A1B2C3 /* Embed Frameworks */ = {
+				isa = PBXCopyFilesBuildPhase;
+				dstPath = "";
+				dstSubfolder = Frameworks;
+				files = (
+				);
+				name = "Embed Frameworks";
+			};
+			F38110162F50000100A1B2C3 /* Embed Frameworks */ = {
+				isa = PBXCopyFilesBuildPhase;
+				dstPath = "";
+				dstSubfolder = Frameworks;
+				files = (
+				);
+				name = "Embed Frameworks";
+			};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		40EBFCE22A16E82D0041012C /* iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F3365B6A2F43D61A00824B1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		F366E1612F47610E000F8F30 /* macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F366E5F12F47D8CC000F8F30 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+			40EBFCE22A16E82D0041012C /* iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+			F38110022F50000100A1B2C3 /* tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = tvOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+			F38110122F50000100A1B2C3 /* visionOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = visionOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+			F3365B6A2F43D61A00824B1C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+			F366E1612F47610E000F8F30 /* macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = macOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+			F366E5F12F47D8CC000F8F30 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		F3365B692F43D4F300824B1C /* Exceptions for "PeerChat" folder in "iOS" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-				Model/CryptoConvert.swift,
+			F3365B692F43D4F300824B1C /* Exceptions for "PeerChat" folder in "iOS" target */ = {
+				isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+				membershipExceptions = (
+					Info.plist,
+					Model/CryptoConvert.swift,
 				Model/CryptoModel.swift,
-			);
-			target = 40EBFCE12A16E82D0041012C /* iOS */;
-		};
-		F36700052F47990000F8F30 /* Exceptions for "PeerChat" folder in "macOS" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Assets.xcassets,
+				);
+				target = 40EBFCE12A16E82D0041012C /* iOS */;
+			};
+			F38110072F50000100A1B2C3 /* Exceptions for "PeerChat" folder in "tvOS" target */ = {
+				isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+				membershipExceptions = (
+					Info.plist,
+					Model/CryptoConvert.swift,
+					Model/CryptoModel.swift,
+				);
+				target = F38110012F50000100A1B2C3 /* tvOS */;
+			};
+			F38110172F50000100A1B2C3 /* Exceptions for "PeerChat" folder in "visionOS" target */ = {
+				isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+				membershipExceptions = (
+					Info.plist,
+					Model/CryptoConvert.swift,
+					Model/CryptoModel.swift,
+				);
+				target = F38110112F50000100A1B2C3 /* visionOS */;
+			};
+			F36700052F47990000F8F30 /* Exceptions for "PeerChat" folder in "macOS" target */ = {
+				isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+				membershipExceptions = (
+					Assets.xcassets,
 				Info.plist,
 				Model/CryptoConvert.swift,
 				Model/CryptoModel.swift,
@@ -59,14 +100,16 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		F3365B4E2F43D4F300824B1C /* PeerChat */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				F3365B692F43D4F300824B1C /* Exceptions for "PeerChat" folder in "iOS" target */,
-				F36700052F47990000F8F30 /* Exceptions for "PeerChat" folder in "macOS" target */,
-			);
-			path = PeerChat;
-			sourceTree = "<group>";
+			F3365B4E2F43D4F300824B1C /* PeerChat */ = {
+				isa = PBXFileSystemSynchronizedRootGroup;
+				exceptions = (
+					F3365B692F43D4F300824B1C /* Exceptions for "PeerChat" folder in "iOS" target */,
+					F38110072F50000100A1B2C3 /* Exceptions for "PeerChat" folder in "tvOS" target */,
+					F38110172F50000100A1B2C3 /* Exceptions for "PeerChat" folder in "visionOS" target */,
+					F36700052F47990000F8F30 /* Exceptions for "PeerChat" folder in "macOS" target */,
+				);
+				path = PeerChat;
+				sourceTree = "<group>";
 		};
 		F366E1622F47610E000F8F30 /* macOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -76,18 +119,33 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		40EBFCDF2A16E82D0041012C /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			files = (
-				F366E1542F470866000F8F30 /* QuickLooking in Frameworks */,
+			40EBFCDF2A16E82D0041012C /* Frameworks */ = {
+				isa = PBXFrameworksBuildPhase;
+				files = (
+					F366E1542F470866000F8F30 /* QuickLooking in Frameworks */,
 				F36ACB3A2BF9E00A00B5744A /* Swifto Crypto in Frameworks */,
 				F311887A2BF90FBF0079A5FE /* ScrechKit in Frameworks */,
-				F3D854942F44DCB900B2A3F7 /* DeviceKit in Frameworks */,
-			);
-		};
-		F366E15E2F47610E000F8F30 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			files = (
+					F3D854942F44DCB900B2A3F7 /* DeviceKit in Frameworks */,
+				);
+			};
+			F38110032F50000100A1B2C3 /* Frameworks */ = {
+				isa = PBXFrameworksBuildPhase;
+				files = (
+					F381100C2F50000100A1B2C3 /* Swifto Crypto in Frameworks */,
+					F381100B2F50000100A1B2C3 /* ScrechKit in Frameworks */,
+					F381100D2F50000100A1B2C3 /* DeviceKit in Frameworks */,
+				);
+			};
+			F38110132F50000100A1B2C3 /* Frameworks */ = {
+				isa = PBXFrameworksBuildPhase;
+				files = (
+					F381101C2F50000100A1B2C3 /* Swifto Crypto in Frameworks */,
+					F381101B2F50000100A1B2C3 /* ScrechKit in Frameworks */,
+				);
+			};
+			F366E15E2F47610E000F8F30 /* Frameworks */ = {
+				isa = PBXFrameworksBuildPhase;
+				files = (
 				F36700022F47990000F8F30 /* QuickLooking in Frameworks */,
 				F36700032F47990000F8F30 /* Swifto Crypto in Frameworks */,
 				F36700012F47990000F8F30 /* ScrechKit in Frameworks */,
@@ -108,21 +166,23 @@
 			);
 			sourceTree = "<group>";
 		};
-		40EBFCE32A16E82D0041012C /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				40EBFCE22A16E82D0041012C /* iOS.app */,
-				F366E1612F47610E000F8F30 /* macOS.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
+			40EBFCE32A16E82D0041012C /* Products */ = {
+				isa = PBXGroup;
+				children = (
+					40EBFCE22A16E82D0041012C /* iOS.app */,
+					F38110022F50000100A1B2C3 /* tvOS.app */,
+					F38110122F50000100A1B2C3 /* visionOS.app */,
+					F366E1612F47610E000F8F30 /* macOS.app */,
+				);
+				name = Products;
+				sourceTree = "<group>";
+			};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		40EBFCE12A16E82D0041012C /* iOS */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 40EBFCF02A16E82F0041012C /* Build configuration list for PBXNativeTarget "iOS" */;
+			40EBFCE12A16E82D0041012C /* iOS */ = {
+				isa = PBXNativeTarget;
+				buildConfigurationList = 40EBFCF02A16E82F0041012C /* Build configuration list for PBXNativeTarget "iOS" */;
 			buildPhases = (
 				40EBFCDE2A16E82D0041012C /* Sources */,
 				40EBFCDF2A16E82D0041012C /* Frameworks */,
@@ -142,11 +202,58 @@
 				F366E1532F470866000F8F30 /* QuickLooking */,
 			);
 			productName = PeerSotial;
-			productReference = 40EBFCE22A16E82D0041012C /* iOS.app */;
-			productType = "com.apple.product-type.application";
-		};
-		F366E1602F47610E000F8F30 /* macOS */ = {
-			isa = PBXNativeTarget;
+				productReference = 40EBFCE22A16E82D0041012C /* iOS.app */;
+				productType = "com.apple.product-type.application";
+			};
+			F38110012F50000100A1B2C3 /* tvOS */ = {
+				isa = PBXNativeTarget;
+				buildConfigurationList = F38110082F50000100A1B2C3 /* Build configuration list for PBXNativeTarget "tvOS" */;
+				buildPhases = (
+					F38110042F50000100A1B2C3 /* Sources */,
+					F38110032F50000100A1B2C3 /* Frameworks */,
+					F38110052F50000100A1B2C3 /* Resources */,
+					F38110062F50000100A1B2C3 /* Embed Frameworks */,
+				);
+				buildRules = (
+				);
+				fileSystemSynchronizedGroups = (
+					F3365B4E2F43D4F300824B1C /* PeerChat */,
+				);
+				name = tvOS;
+				packageProductDependencies = (
+					F31188792BF90FBF0079A5FE /* ScrechKit */,
+					F36ACB392BF9E00A00B5744A /* Swifto Crypto */,
+					F3D854932F44DCB900B2A3F7 /* DeviceKit */,
+				);
+				productName = tvOS;
+				productReference = F38110022F50000100A1B2C3 /* tvOS.app */;
+				productType = "com.apple.product-type.application";
+			};
+			F38110112F50000100A1B2C3 /* visionOS */ = {
+				isa = PBXNativeTarget;
+				buildConfigurationList = F38110182F50000100A1B2C3 /* Build configuration list for PBXNativeTarget "visionOS" */;
+				buildPhases = (
+					F38110142F50000100A1B2C3 /* Sources */,
+					F38110132F50000100A1B2C3 /* Frameworks */,
+					F38110152F50000100A1B2C3 /* Resources */,
+					F38110162F50000100A1B2C3 /* Embed Frameworks */,
+				);
+				buildRules = (
+				);
+				fileSystemSynchronizedGroups = (
+					F3365B4E2F43D4F300824B1C /* PeerChat */,
+				);
+				name = visionOS;
+				packageProductDependencies = (
+					F31188792BF90FBF0079A5FE /* ScrechKit */,
+					F36ACB392BF9E00A00B5744A /* Swifto Crypto */,
+				);
+				productName = visionOS;
+				productReference = F38110122F50000100A1B2C3 /* visionOS.app */;
+				productType = "com.apple.product-type.application";
+			};
+			F366E1602F47610E000F8F30 /* macOS */ = {
+				isa = PBXNativeTarget;
 			buildConfigurationList = F366E1692F47610F000F8F30 /* Build configuration list for PBXNativeTarget "macOS" */;
 			buildPhases = (
 				F366E15D2F47610E000F8F30 /* Sources */,
@@ -179,14 +286,20 @@
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2630;
 				LastUpgradeCheck = 2640;
-				TargetAttributes = {
-					40EBFCE12A16E82D0041012C = {
-						CreatedOnToolsVersion = 14.2;
+					TargetAttributes = {
+						40EBFCE12A16E82D0041012C = {
+							CreatedOnToolsVersion = 14.2;
+						};
+						F38110012F50000100A1B2C3 = {
+							CreatedOnToolsVersion = 26.3;
+						};
+						F38110112F50000100A1B2C3 = {
+							CreatedOnToolsVersion = 26.3;
+						};
+						F366E1602F47610E000F8F30 = {
+							CreatedOnToolsVersion = 26.3;
+						};
 					};
-					F366E1602F47610E000F8F30 = {
-						CreatedOnToolsVersion = 26.3;
-					};
-				};
 			};
 			buildConfigurationList = 40EBFCDD2A16E82D0041012C /* Build configuration list for PBXProject "PeerChat" */;
 			developmentRegion = en;
@@ -206,35 +319,57 @@
 			productRefGroup = 40EBFCE32A16E82D0041012C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
-			targets = (
-				40EBFCE12A16E82D0041012C /* iOS */,
-				F366E1602F47610E000F8F30 /* macOS */,
-			);
-		};
+				targets = (
+					40EBFCE12A16E82D0041012C /* iOS */,
+					F38110012F50000100A1B2C3 /* tvOS */,
+					F38110112F50000100A1B2C3 /* visionOS */,
+					F366E1602F47610E000F8F30 /* macOS */,
+				);
+			};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		40EBFCE02A16E82D0041012C /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			files = (
-			);
-		};
-		F366E15F2F47610E000F8F30 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			files = (
+			40EBFCE02A16E82D0041012C /* Resources */ = {
+				isa = PBXResourcesBuildPhase;
+				files = (
+				);
+			};
+			F38110052F50000100A1B2C3 /* Resources */ = {
+				isa = PBXResourcesBuildPhase;
+				files = (
+				);
+			};
+			F38110152F50000100A1B2C3 /* Resources */ = {
+				isa = PBXResourcesBuildPhase;
+				files = (
+				);
+			};
+			F366E15F2F47610E000F8F30 /* Resources */ = {
+				isa = PBXResourcesBuildPhase;
+				files = (
 			);
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		40EBFCDE2A16E82D0041012C /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			files = (
-			);
-		};
-		F366E15D2F47610E000F8F30 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			files = (
+			40EBFCDE2A16E82D0041012C /* Sources */ = {
+				isa = PBXSourcesBuildPhase;
+				files = (
+				);
+			};
+			F38110042F50000100A1B2C3 /* Sources */ = {
+				isa = PBXSourcesBuildPhase;
+				files = (
+				);
+			};
+			F38110142F50000100A1B2C3 /* Sources */ = {
+				isa = PBXSourcesBuildPhase;
+				files = (
+				);
+			};
+			F366E15D2F47610E000F8F30 /* Sources */ = {
+				isa = PBXSourcesBuildPhase;
+				files = (
 			);
 		};
 /* End PBXSourcesBuildPhase section */
@@ -398,9 +533,9 @@
 			};
 			name = Debug;
 		};
-		40EBFCF22A16E82F0041012C /* Release configuration for PBXNativeTarget "iOS" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
+			40EBFCF22A16E82F0041012C /* Release configuration for PBXNativeTarget "iOS" */ = {
+				isa = XCBuildConfiguration;
+				buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
@@ -429,12 +564,132 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				};
+				name = Release;
 			};
-			name = Release;
-		};
-		F366E16A2F47610F000F8F30 /* Debug configuration for PBXNativeTarget "macOS" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
+			F38110092F50000100A1B2C3 /* Debug configuration for PBXNativeTarget "tvOS" */ = {
+				isa = XCBuildConfiguration;
+				buildSettings = {
+					ASSETCATALOG_COMPILER_APPICON_NAME = "";
+					ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+					CODE_SIGN_STYLE = Automatic;
+					ENABLE_PREVIEWS = YES;
+					GENERATE_INFOPLIST_FILE = YES;
+					INFOPLIST_FILE = PeerChat/Info.plist;
+					INFOPLIST_KEY_CFBundleDisplayName = "Peer Chat";
+					INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+					INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Multipeer Connectivity";
+					INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record and send voice messages";
+					INFOPLIST_KEY_NSVoIPUsageDescription = Calls;
+					LD_RUNPATH_SEARCH_PATHS = (
+						"$(inherited)",
+						"@executable_path/Frameworks",
+					);
+					PRODUCT_BUNDLE_IDENTIFIER = dev.topscrech.PeerChat.tvOS;
+					PRODUCT_NAME = "$(TARGET_NAME)";
+					SDKROOT = appletvos;
+					SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
+					SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+					SWIFT_EMIT_LOC_STRINGS = YES;
+					SWIFT_VERSION = 6.0;
+					TARGETED_DEVICE_FAMILY = 3;
+					TVOS_DEPLOYMENT_TARGET = 17.0;
+				};
+				name = Debug;
+			};
+			F381100A2F50000100A1B2C3 /* Release configuration for PBXNativeTarget "tvOS" */ = {
+				isa = XCBuildConfiguration;
+				buildSettings = {
+					ASSETCATALOG_COMPILER_APPICON_NAME = "";
+					ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+					CODE_SIGN_STYLE = Automatic;
+					ENABLE_PREVIEWS = YES;
+					GENERATE_INFOPLIST_FILE = YES;
+					INFOPLIST_FILE = PeerChat/Info.plist;
+					INFOPLIST_KEY_CFBundleDisplayName = "Peer Chat";
+					INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+					INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Multipeer Connectivity";
+					INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record and send voice messages";
+					INFOPLIST_KEY_NSVoIPUsageDescription = Calls;
+					LD_RUNPATH_SEARCH_PATHS = (
+						"$(inherited)",
+						"@executable_path/Frameworks",
+					);
+					PRODUCT_BUNDLE_IDENTIFIER = dev.topscrech.PeerChat.tvOS;
+					PRODUCT_NAME = "$(TARGET_NAME)";
+					SDKROOT = appletvos;
+					SUPPORTED_PLATFORMS = "appletvos appletvsimulator";
+					SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+					SWIFT_EMIT_LOC_STRINGS = YES;
+					SWIFT_VERSION = 6.0;
+					TARGETED_DEVICE_FAMILY = 3;
+					TVOS_DEPLOYMENT_TARGET = 17.0;
+				};
+				name = Release;
+			};
+			F38110192F50000100A1B2C3 /* Debug configuration for PBXNativeTarget "visionOS" */ = {
+				isa = XCBuildConfiguration;
+				buildSettings = {
+					ASSETCATALOG_COMPILER_APPICON_NAME = "";
+					ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+					CODE_SIGN_STYLE = Automatic;
+					ENABLE_PREVIEWS = YES;
+					GENERATE_INFOPLIST_FILE = YES;
+					INFOPLIST_FILE = PeerChat/Info.plist;
+					INFOPLIST_KEY_CFBundleDisplayName = "Peer Chat";
+					INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+					INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Multipeer Connectivity";
+					INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record and send voice messages";
+					INFOPLIST_KEY_NSVoIPUsageDescription = Calls;
+					LD_RUNPATH_SEARCH_PATHS = (
+						"$(inherited)",
+						"@executable_path/Frameworks",
+					);
+					PRODUCT_BUNDLE_IDENTIFIER = dev.topscrech.PeerChat.visionOS;
+					PRODUCT_NAME = "$(TARGET_NAME)";
+					SDKROOT = xros;
+					SUPPORTED_PLATFORMS = "xros xrsimulator";
+					SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+					SWIFT_EMIT_LOC_STRINGS = YES;
+					SWIFT_VERSION = 6.0;
+					TARGETED_DEVICE_FAMILY = 7;
+					XROS_DEPLOYMENT_TARGET = 1.0;
+				};
+				name = Debug;
+			};
+			F381101A2F50000100A1B2C3 /* Release configuration for PBXNativeTarget "visionOS" */ = {
+				isa = XCBuildConfiguration;
+				buildSettings = {
+					ASSETCATALOG_COMPILER_APPICON_NAME = "";
+					ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+					CODE_SIGN_STYLE = Automatic;
+					ENABLE_PREVIEWS = YES;
+					GENERATE_INFOPLIST_FILE = YES;
+					INFOPLIST_FILE = PeerChat/Info.plist;
+					INFOPLIST_KEY_CFBundleDisplayName = "Peer Chat";
+					INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
+					INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Multipeer Connectivity";
+					INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record and send voice messages";
+					INFOPLIST_KEY_NSVoIPUsageDescription = Calls;
+					LD_RUNPATH_SEARCH_PATHS = (
+						"$(inherited)",
+						"@executable_path/Frameworks",
+					);
+					PRODUCT_BUNDLE_IDENTIFIER = dev.topscrech.PeerChat.visionOS;
+					PRODUCT_NAME = "$(TARGET_NAME)";
+					SDKROOT = xros;
+					SUPPORTED_PLATFORMS = "xros xrsimulator";
+					SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+					SWIFT_EMIT_LOC_STRINGS = YES;
+					SWIFT_VERSION = 6.0;
+					TARGETED_DEVICE_FAMILY = 7;
+					XROS_DEPLOYMENT_TARGET = 1.0;
+				};
+				name = Release;
+			};
+			F366E16A2F47610F000F8F30 /* Debug configuration for PBXNativeTarget "macOS" */ = {
+				isa = XCBuildConfiguration;
+				buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -532,18 +787,34 @@
 			);
 			defaultConfigurationName = Release;
 		};
-		40EBFCF02A16E82F0041012C /* Build configuration list for PBXNativeTarget "iOS" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				40EBFCF12A16E82F0041012C /* Debug configuration for PBXNativeTarget "iOS" */,
-				40EBFCF22A16E82F0041012C /* Release configuration for PBXNativeTarget "iOS" */,
-			);
-			defaultConfigurationName = Release;
-		};
-		F366E1692F47610F000F8F30 /* Build configuration list for PBXNativeTarget "macOS" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				F366E16A2F47610F000F8F30 /* Debug configuration for PBXNativeTarget "macOS" */,
+			40EBFCF02A16E82F0041012C /* Build configuration list for PBXNativeTarget "iOS" */ = {
+				isa = XCConfigurationList;
+				buildConfigurations = (
+					40EBFCF12A16E82F0041012C /* Debug configuration for PBXNativeTarget "iOS" */,
+					40EBFCF22A16E82F0041012C /* Release configuration for PBXNativeTarget "iOS" */,
+				);
+				defaultConfigurationName = Release;
+			};
+			F38110082F50000100A1B2C3 /* Build configuration list for PBXNativeTarget "tvOS" */ = {
+				isa = XCConfigurationList;
+				buildConfigurations = (
+					F38110092F50000100A1B2C3 /* Debug configuration for PBXNativeTarget "tvOS" */,
+					F381100A2F50000100A1B2C3 /* Release configuration for PBXNativeTarget "tvOS" */,
+				);
+				defaultConfigurationName = Release;
+			};
+			F38110182F50000100A1B2C3 /* Build configuration list for PBXNativeTarget "visionOS" */ = {
+				isa = XCConfigurationList;
+				buildConfigurations = (
+					F38110192F50000100A1B2C3 /* Debug configuration for PBXNativeTarget "visionOS" */,
+					F381101A2F50000100A1B2C3 /* Release configuration for PBXNativeTarget "visionOS" */,
+				);
+				defaultConfigurationName = Release;
+			};
+			F366E1692F47610F000F8F30 /* Build configuration list for PBXNativeTarget "macOS" */ = {
+				isa = XCConfigurationList;
+				buildConfigurations = (
+					F366E16A2F47610F000F8F30 /* Debug configuration for PBXNativeTarget "macOS" */,
 				F366E16B2F47610F000F8F30 /* Release configuration for PBXNativeTarget "macOS" */,
 			);
 			defaultConfigurationName = Release;

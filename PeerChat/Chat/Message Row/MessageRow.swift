@@ -47,9 +47,14 @@ struct MessageRow: View {
             .contextMenu {
                 if message.contentType == .file {
                     if let preparedFileContext {
+#if os(tvOS)
+                        Button("Save", systemImage: "square.and.arrow.down") {}
+                            .disabled(true)
+#else
                         ShareLink(item: preparedFileContext.url) {
                             Label("Save", systemImage: "square.and.arrow.up")
                         }
+#endif
                     } else {
                         Button("Save", systemImage: "square.and.arrow.down") {}
                             .disabled(true)

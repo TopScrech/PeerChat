@@ -1,6 +1,7 @@
 import SwiftUI
+#if canImport(DeviceKit)
 import DeviceKit
-import Combine
+#endif
 
 final class ValueStore: ObservableObject {
     @AppStorage("nickname") var nickname = ValueStore.defaultNickname
@@ -23,11 +24,13 @@ final class ValueStore: ObservableObject {
     }
     
     private static var defaultNickname: String {
+#if canImport(DeviceKit)
         let name = Device.current.description
         
         if !name.isEmpty {
             return name
         }
+#endif
 #if os(iOS)
         return UIDevice.current.model
 #elseif os(macOS)
