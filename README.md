@@ -5,7 +5,7 @@ Peer-to-Peer messenger written in SwiftUI, using [Multipeer Connectivity](https:
 <img src="https://github.com/Lukas1h/PeerChat/assets/53445584/7c19de04-4e48-4dfa-b900-013699501928" height="500">
 
 ## Supported platforms
-- iOS/iPadOS 17+
+- iOS / iPadOS 17+
 - tvOS 17+
 - visionOS 1+
 - macOS 14+
