@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/TopScrech/QuickLooking",
       "state" : {
-        "branch" : "main",
-        "revision" : "12da914fc7f19efc4b9273b2e7343e56f76a56a3"
+        "revision" : "12da914fc7f19efc4b9273b2e7343e56f76a56a3",
+        "version" : "1.0.0"
       }
     },
     {
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/TopScrech/ScrechKit",
       "state" : {
-        "branch" : "main",
-        "revision" : "fd773c46059dfaa41dbe3e754ba672f1273ea074"
+        "revision" : "a9ec3560ca613c10fa6f7aae2ab73a1c1a1ac3bb",
+        "version" : "1.0.3"
       }
     },
     {
