@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/TopScrech/QuickLooking",
       "state" : {
-        "revision" : "12da914fc7f19efc4b9273b2e7343e56f76a56a3",
-        "version" : "1.0.0"
+        "revision" : "ca873f9a4edb3be00252cf7044154be6fdb932e8",
+        "version" : "1.0.1"
       }
     },
     {
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/TopScrech/ScrechKit",
       "state" : {
-        "revision" : "a9ec3560ca613c10fa6f7aae2ab73a1c1a1ac3bb",
-        "version" : "1.0.3"
+        "revision" : "b042653a85530e387eb5036a49983918d6511276",
+        "version" : "1.0.4"
       }
     },
     {
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/TopScrech/Swifto-Crypto",
       "state" : {
-        "revision" : "c66a6909361ee15510016cd8693b3a3282bce5fc",
-        "version" : "1.0.0"
+        "revision" : "0af3a5e621f80d754bffa5f233861dad3587a7d2",
+        "version" : "1.0.1"
       }
     }
   ],
