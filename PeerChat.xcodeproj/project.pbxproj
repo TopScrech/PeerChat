@@ -68,17 +68,6 @@
 			);
 			target = 40EBFCE12A16E82D0041012C /* iOS */;
 		};
-		F36700052F47990000F8F30 /* Exceptions for "PeerChat" folder in "macOS" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Assets.xcassets,
-				Info.plist,
-				Model/CryptoConvert.swift,
-				Model/CryptoModel.swift,
-				Nav/PeerChatApp.swift,
-			);
-			target = F366E1602F47610E000F8F30 /* macOS */;
-		};
 		F38110072F50000100A1B2C3 /* Exceptions for "PeerChat" folder in "tvOS" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -106,7 +95,6 @@
 				F3365B692F43D4F300824B1C /* Exceptions for "PeerChat" folder in "iOS" target */,
 				F38110072F50000100A1B2C3 /* Exceptions for "PeerChat" folder in "tvOS" target */,
 				F38110172F50000100A1B2C3 /* Exceptions for "PeerChat" folder in "visionOS" target */,
-				F36700052F47990000F8F30 /* Exceptions for "PeerChat" folder in "macOS" target */,
 			);
 			path = PeerChat;
 			sourceTree = "<group>";
@@ -159,9 +147,9 @@
 			isa = PBXGroup;
 			children = (
 				F3365B6A2F43D61A00824B1C /* README.md */,
-				F366E5F12F47D8CC000F8F30 /* LICENSE.txt */,
 				F3365B4E2F43D4F300824B1C /* PeerChat */,
 				F366E1622F47610E000F8F30 /* macOS */,
+				F366E5F12F47D8CC000F8F30 /* LICENSE.txt */,
 				40EBFCE32A16E82D0041012C /* Products */,
 			);
 			sourceTree = "<group>";
