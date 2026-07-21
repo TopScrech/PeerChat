@@ -1,7 +1,6 @@
 import ScrechKit
 @preconcurrency import AVFoundation
 import Observation
-@preconcurrency import MultipeerConnectivity
 import SwiftoCrypto
 #if os(iOS)
 import CallKit
@@ -46,18 +45,13 @@ final class Model: NSObject {
         case remoteEnded, failed, unanswered
     }
     
-    private let serviceType = "PeerChat"
     let maxAttachmentBytes = 10 * 1024 * 1024
-    private let myPeerId = MCPeerID(displayName: ValueStore().nickname)
-    private let serviceAdvertiser: MCNearbyServiceAdvertiser
-    private let serviceBrowser: MCNearbyServiceBrowser
-    nonisolated(unsafe) private let session: MCSession
+    private let networkSession: PeerNetworkSession
     private let encoder = PropertyListEncoder()
     private let decoder = PropertyListDecoder()
-    private var invitedPeers: Set<MCPeerID> = []
-    private var outgoingChatRequestIDs: [MCPeerID: UUID] = [:]
-    private var incomingChatRequestIDs: [MCPeerID: UUID] = [:]
-    private var pendingActivationPeers: Set<MCPeerID> = []
+    private var outgoingChatRequestIDs: [PeerID: UUID] = [:]
+    private var incomingChatRequestIDs: [PeerID: UUID] = [:]
+    private var pendingActivationPeers: Set<PeerID> = []
     @ObservationIgnored private let callCaptureEngine = AVAudioEngine()
     @ObservationIgnored private let callRenderEngine = AVAudioEngine()
     @ObservationIgnored private let callPlayerNode = AVAudioPlayerNode()
@@ -76,11 +70,11 @@ final class Model: NSObject {
     @ObservationIgnored private let systemCallManager = SystemCallManager()
 #endif
     
-    var connectedPeers: [MCPeerID] = []
+    var connectedPeers: [PeerID] = []
     var chats: [DuoChat] = []
     var chatRouteID: UUID?
     var callState: CallState = .idle
-    var callPeerID: MCPeerID?
+    var callPeerID: PeerID?
     var isMicrophoneMuted = false
     
     var myPerson: Person
@@ -89,6 +83,10 @@ final class Model: NSObject {
     
     init(_ crypto: CryptoModel) {
         self.crypto = crypto
+        let store = ValueStore()
+        let deviceID = store.deviceID
+        let localPeer = PeerID(id: UUID(), displayName: store.nickname)
+        networkSession = PeerNetworkSession(localPeer: localPeer, status: store.status)
         
         guard let callAudioFormat = AVAudioFormat(
             commonFormat: .pcmFormatInt16,
@@ -101,45 +99,23 @@ final class Model: NSObject {
         
         self.callAudioFormat = callAudioFormat
         
-        session = MCSession(
-            peer: myPeerId,
-            securityIdentity: nil,
-            encryptionPreference: .required
-        )
-        
-        serviceAdvertiser = MCNearbyServiceAdvertiser(
-            peer: myPeerId,
-            discoveryInfo: ["Status": ValueStore().status],
-            serviceType: serviceType
-        )
-        
-        serviceBrowser = MCNearbyServiceBrowser(
-            peer: myPeerId,
-            serviceType: serviceType
-        )
-        
-        let deviceId = ValueStore().deviceID
-        
         myPerson = Person(
-            session.myPeerID,
-            id: deviceId,
+            localPeer,
+            id: deviceID,
             publicKey: crypto.publicKeyToString(crypto.publicKey),
             info: [
-                "Status": ValueStore().status
+                "Status": store.status
             ]
         )
         
         super.init()
         
-        session.delegate = self
-        serviceAdvertiser.delegate = self
-        serviceBrowser.delegate = self
+        networkSession.delegate = self
 #if os(iOS)
         systemCallManager.delegate = self
 #endif
         
-        serviceAdvertiser.startAdvertisingPeer()
-        serviceBrowser.startBrowsingForPeers()
+        networkSession.start()
     }
     
     func disconnectPeer(_ uuid: UUID) {
@@ -169,7 +145,7 @@ final class Model: NSObject {
         
         clearChatRequests(for: peerID)
         
-        session.cancelConnectPeer(peerID)
+        networkSession.disconnect(peerID)
         
         chats.removeAll {
             $0.chat.peer == peerID
@@ -180,7 +156,7 @@ final class Model: NSObject {
         chats.filter(\.isActive)
     }
     
-    var incomingChatPeers: [MCPeerID] {
+    var incomingChatPeers: [PeerID] {
         incomingChatRequestIDs
             .keys
             .sorted {
@@ -188,7 +164,7 @@ final class Model: NSObject {
             }
     }
     
-    func displayName(for peer: MCPeerID) -> String {
+    func displayName(for peer: PeerID) -> String {
         chats.first(where: { $0.chat.peer == peer })?.person.name ?? peer.displayName
     }
     
@@ -217,7 +193,7 @@ final class Model: NSObject {
             return
         }
         
-        guard session.connectedPeers.contains(chat.peer) else {
+        guard connectedPeers.contains(chat.peer) else {
             return
         }
         
@@ -317,7 +293,7 @@ final class Model: NSObject {
         activateCallSession()
     }
     
-    private func sendCallStart(to peer: MCPeerID) {
+    private func sendCallStart(to peer: PeerID) {
         guard callState == .dialing else {
             return
         }
@@ -334,19 +310,19 @@ final class Model: NSObject {
         )
     }
     
-    func hasPendingOutgoingChatRequest(to peer: MCPeerID) -> Bool {
+    func hasPendingOutgoingChatRequest(to peer: PeerID) -> Bool {
         outgoingChatRequestIDs[peer] != nil
     }
     
-    func hasIncomingChatRequest(from peer: MCPeerID) -> Bool {
+    func hasIncomingChatRequest(from peer: PeerID) -> Bool {
         incomingChatRequestIDs[peer] != nil
     }
     
-    func isActiveChat(with peer: MCPeerID) -> Bool {
+    func isActiveChat(with peer: PeerID) -> Bool {
         chats.first(where: { $0.chat.peer == peer })?.isActive == true
     }
     
-    func openChat(with peer: MCPeerID) {
+    func openChat(with peer: PeerID) {
         guard let chat = chats.first(where: { $0.chat.peer == peer }) else {
             return
         }
@@ -362,7 +338,7 @@ final class Model: NSObject {
         chatRouteID = nil
     }
     
-    func requestChat(with peer: MCPeerID) {
+    func requestChat(with peer: PeerID) {
         guard connectedPeers.contains(peer) else {
             return
         }
@@ -387,7 +363,7 @@ final class Model: NSObject {
         outgoingChatRequestIDs[peer] = request.id
     }
     
-    func respondToChatRequest(from peer: MCPeerID, accept: Bool) {
+    func respondToChatRequest(from peer: PeerID, accept: Bool) {
         guard let requestID = incomingChatRequestIDs[peer] else {
             return
         }
@@ -400,7 +376,7 @@ final class Model: NSObject {
         }
     }
     
-    func sendCloseChatMessage(to peer: MCPeerID) {
+    func sendCloseChatMessage(to peer: PeerID) {
         let closeMessage = ConnectMessage(messageType: .CloseChat, peerInfo: nil, message: nil)
         
         sendControlMessage(closeMessage, to: [peer])
@@ -501,7 +477,7 @@ final class Model: NSObject {
             message: message
         )
         
-        guard !session.connectedPeers.isEmpty else {
+        guard connectedPeers.isEmpty == false else {
             return
         }
         
@@ -514,8 +490,8 @@ final class Model: NSObject {
     
     private func sendControlMessage(
         _ message: ConnectMessage,
-        to peers: [MCPeerID],
-        mode: MCSessionSendDataMode = .reliable
+        to peers: [PeerID],
+        mode: PeerNetworkDelivery = .reliable
     ) {
         guard peers.isEmpty == false else {
             return
@@ -532,8 +508,8 @@ final class Model: NSObject {
     private func sendPayload(
         _ body: Data,
         type: SessionPayloadType,
-        to peers: [MCPeerID],
-        mode: MCSessionSendDataMode
+        to peers: [PeerID],
+        mode: PeerNetworkDelivery
     ) {
         guard peers.isEmpty == false else {
             return
@@ -542,11 +518,7 @@ final class Model: NSObject {
         var payload = Data([type.rawValue])
         payload.append(body)
         
-        do {
-            try session.send(payload, toPeers: peers, with: mode)
-        } catch {
-            print("Session send failed:", error.localizedDescription)
-        }
+        networkSession.send(payload, to: peers, delivery: mode)
     }
     
     private func decodePayload(_ data: Data) -> (type: SessionPayloadType, body: Data)? {
@@ -561,8 +533,8 @@ final class Model: NSObject {
         return (type, Data(data.dropFirst()))
     }
     
-    private func receiveCallStart(from peer: MCPeerID) {
-        guard session.connectedPeers.contains(peer) else {
+    private func receiveCallStart(from peer: PeerID) {
+        guard connectedPeers.contains(peer) else {
             return
         }
         
@@ -622,7 +594,7 @@ final class Model: NSObject {
 #endif
     }
     
-    private func receiveCallAccepted(from peer: MCPeerID) {
+    private func receiveCallAccepted(from peer: PeerID) {
         guard callPeerID == peer else {
             return
         }
@@ -750,7 +722,7 @@ final class Model: NSObject {
         let inputNode = callCaptureEngine.inputNode
         let inputFormat = inputNode.outputFormat(forBus: 0)
         let outputFormat = callAudioFormat
-        let session = self.session
+        let datagramSender = networkSession.datagramSender
         
         let converter = AVAudioConverter(from: inputFormat, to: outputFormat)
         if converter == nil && Self.formatsMatch(inputFormat, outputFormat) == false {
@@ -758,7 +730,7 @@ final class Model: NSObject {
         }
         
         let tapHandler = Self.makeCaptureTapHandler(
-            session: session,
+            datagramSender: datagramSender,
             peerID: callPeerID,
             converter: converter,
             outputFormat: outputFormat,
@@ -772,7 +744,7 @@ final class Model: NSObject {
         )
         
         inputNode.removeTap(onBus: 0)
-        inputNode.installTap(onBus: 0, bufferSize: 4096, format: inputFormat, block: tapHandler)
+        inputNode.installTap(onBus: 0, bufferSize: 960, format: inputFormat, block: tapHandler)
         
         if callCaptureEngine.isRunning == false {
             callCaptureEngine.prepare()
@@ -860,22 +832,17 @@ final class Model: NSObject {
     
     nonisolated private static func sendCallAudioPayload(
         _ audioData: Data,
-        to peerID: MCPeerID,
-        session: MCSession
+        to peerID: PeerID,
+        datagramSender: PeerDatagramSender
     ) {
         var payload = Data([SessionPayloadType.voipAudio.rawValue])
         payload.append(audioData)
-        
-        do {
-            try session.send(payload, toPeers: [peerID], with: .unreliable)
-        } catch {
-            print("Session send failed:", error.localizedDescription)
-        }
+        datagramSender.send(payload, to: peerID.id)
     }
     
     nonisolated private static func makeCaptureTapHandler(
-        session: MCSession,
-        peerID: MCPeerID,
+        datagramSender: PeerDatagramSender,
+        peerID: PeerID,
         converter: AVAudioConverter?,
         outputFormat: AVAudioFormat,
         isMuted: @escaping () -> Bool
@@ -893,7 +860,11 @@ final class Model: NSObject {
                 return
             }
             
-            Self.sendCallAudioPayload(audioData, to: peerID, session: session)
+            Self.sendCallAudioPayload(
+                audioData,
+                to: peerID,
+                datagramSender: datagramSender
+            )
         }
     }
     
@@ -950,7 +921,7 @@ final class Model: NSObject {
         lhs.isInterleaved == rhs.isInterleaved
     }
     
-    private func receiveCallAudio(_ data: Data, from peer: MCPeerID) {
+    private func receiveCallAudio(_ data: Data, from peer: PeerID) {
         guard callState == .active else {
             return
         }
@@ -993,7 +964,7 @@ final class Model: NSObject {
         callPlayerNode.scheduleBuffer(buffer)
     }
     
-    func reciveInfo(info: ConnectMessage, from: MCPeerID, size: Int) {
+    func reciveInfo(info: ConnectMessage, from: PeerID, size: Int) {
         print("Received info:", info.messageType)
         
         switch info.messageType {
@@ -1123,7 +1094,7 @@ final class Model: NSObject {
         }
     }
     
-    func handleCloseChat(from peer: MCPeerID) {
+    func handleCloseChat(from peer: PeerID) {
         print(peer.displayName, "has disconnected")
         
         if callPeerID == peer {
@@ -1134,12 +1105,12 @@ final class Model: NSObject {
             )
         }
         
-        session.disconnect()
+        networkSession.disconnect(peer)
         clearChatRequests(for: peer)
         changeState.toggle()
     }
     
-    private func handleChatRequestResponse(_ response: ChatRequestResponse, from peer: MCPeerID) {
+    private func handleChatRequestResponse(_ response: ChatRequestResponse, from peer: PeerID) {
         guard let requestID = outgoingChatRequestIDs[peer] else {
             return
         }
@@ -1155,7 +1126,7 @@ final class Model: NSObject {
         }
     }
     
-    private func sendChatRequestResponse(to peer: MCPeerID, requestID: UUID, accept: Bool) {
+    private func sendChatRequestResponse(to peer: PeerID, requestID: UUID, accept: Bool) {
         let response = ConnectMessage(
             messageType: .ChatRequestResponse,
             chatRequestResponse: ChatRequestResponse(
@@ -1167,7 +1138,7 @@ final class Model: NSObject {
         sendControlMessage(response, to: [peer])
     }
     
-    private func activateChat(with peer: MCPeerID, shouldRoute: Bool) {
+    private func activateChat(with peer: PeerID, shouldRoute: Bool) {
         if let chatIndex = chats.firstIndex(where: { $0.chat.peer == peer }) {
             chats[chatIndex].isActive = true
             
@@ -1181,13 +1152,13 @@ final class Model: NSObject {
         pendingActivationPeers.insert(peer)
     }
     
-    private func clearChatRequests(for peer: MCPeerID) {
+    private func clearChatRequests(for peer: PeerID) {
         outgoingChatRequestIDs[peer] = nil
         incomingChatRequestIDs[peer] = nil
         pendingActivationPeers.remove(peer)
     }
     
-    //    func reciveInfo(info: ConnectMessage, from: MCPeerID) {
+    //    func reciveInfo(info: ConnectMessage, from: PeerID) {
     //        print("Recived Info", info.messageType)
     //
     //        if info.messageType == .Message {
@@ -1199,7 +1170,7 @@ final class Model: NSObject {
     //        }
     //    }
     
-    func newConnection(peer: MCPeerID) {
+    func newConnection(peer: PeerID) {
         print("New Connection:", peer.displayName)
         
         let newMessage = ConnectMessage(messageType: .PeerInfo, peerInfo: self.myPerson)
@@ -1207,7 +1178,7 @@ final class Model: NSObject {
         sendControlMessage(newMessage, to: [peer])
     }
     
-    func newPerson(person: Person, from: MCPeerID) {
+    func newPerson(person: Person, from: PeerID) {
         if let index = chats.firstIndex(where: { $0.chat.peer == from }) {
             chats[index].person = person
             chats[index].chat.person = person
@@ -1223,7 +1194,7 @@ final class Model: NSObject {
         if let existingIndex = chats.firstIndex(where: { $0.person.id == person.id }) {
             let existingPeer = chats[existingIndex].chat.peer
             
-            guard !session.connectedPeers.contains(existingPeer) else {
+            guard !connectedPeers.contains(existingPeer) else {
                 print("Rejecting duplicate identity from a different connected peer")
                 return
             }
@@ -1254,7 +1225,7 @@ final class Model: NSObject {
     
     func newMessage(
         message: Message,
-        from: MCPeerID,
+        from: PeerID,
         size: Int
     ) {
         guard let chatIndex = chats.firstIndex(where: { $0.chat.peer == from }) else {
@@ -1281,33 +1252,8 @@ final class Model: NSObject {
     }
 }
 
-nonisolated extension Model: MCNearbyServiceAdvertiserDelegate {
-    nonisolated func advertiser(
-        _ advertiser: MCNearbyServiceAdvertiser,
-        didNotStartAdvertisingPeer error: Error
-    ) {
-        print("Advertiser didNotStartAdvertisingPeer:", error.localizedDescription)
-    }
-    
-    nonisolated func advertiser(
-        _ advertiser: MCNearbyServiceAdvertiser,
-        didReceiveInvitationFromPeer peerId: MCPeerID,
-        withContext context: Data?,
-        invitationHandler: @escaping (Bool, MCSession?) -> Void
-    ) {
-        print("didReceiveInvitationFromPeer", peerId)
-        
-        invitationHandler(true, session)
-    }
-}
-
 extension Model {
     func restartConnections() {
-        serviceBrowser.stopBrowsingForPeers()
-        
-        serviceAdvertiser.stopAdvertisingPeer()
-        
-        session.disconnect()
         finishCurrentCall(
             notifyRemote: true,
             reportToSystem: true,
@@ -1320,87 +1266,7 @@ extension Model {
         incomingChatRequestIDs.removeAll()
         pendingActivationPeers.removeAll()
         chatRouteID = nil
-        
-        // Start browsing and advertising again
-        serviceAdvertiser.startAdvertisingPeer()
-        serviceBrowser.startBrowsingForPeers()
-    }
-}
-
-nonisolated extension Model: MCNearbyServiceBrowserDelegate {
-    nonisolated func browser(
-        _ browser: MCNearbyServiceBrowser,
-        didNotStartBrowsingForPeers error: Error)
-    {
-        print("ServiceBrowser didNotStartBrowsingForPeers:", String(describing: error))
-    }
-    
-    nonisolated func browser(
-        _ browser: MCNearbyServiceBrowser,
-        foundPeer peerID: MCPeerID,
-        withDiscoveryInfo info: [String: String]?
-    ) {
-        Task { @MainActor [weak self] in
-            self?.foundPeer(peerID)
-        }
-    }
-    
-    nonisolated func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
-        Task { @MainActor [weak self] in
-            self?.invitedPeers.remove(peerID)
-        }
-        
-        print("ServiceBrowser lost peer:", peerID)
-    }
-}
-
-nonisolated extension Model: MCSessionDelegate {
-    nonisolated func session(
-        _ session: MCSession,
-        peer peerID: MCPeerID,
-        didChange state: MCSessionState
-    ) {
-        Task { @MainActor [weak self] in
-            self?.didChangePeerState(peerID: peerID, state: state)
-        }
-    }
-    
-    nonisolated func session(
-        _ session: MCSession,
-        didReceive data: Data,
-        fromPeer peerID: MCPeerID
-    ) {
-        Task { @MainActor [weak self] in
-            self?.didReceiveData(data, from: peerID)
-        }
-    }
-    
-    nonisolated public func session(
-        _ session: MCSession,
-        didReceive stream: InputStream,
-        withName streamName: String,
-        fromPeer peerID: MCPeerID
-    ) {
-        print("Receiving streams is not supported")
-    }
-    
-    nonisolated public func session(
-        _ session: MCSession,
-        didStartReceivingResourceWithName resourceName: String,
-        fromPeer peerID: MCPeerID,
-        with progress: Progress
-    ) {
-        print("Receiving resources is not supported")
-    }
-    
-    nonisolated public func session(
-        _ session: MCSession,
-        didFinishReceivingResourceWithName resourceName: String,
-        fromPeer peerID: MCPeerID,
-        at localURL: URL?,
-        withError error: Error?
-    ) {
-        print("Receiving resources is not supported")
+        networkSession.restart()
     }
 }
 
@@ -1455,57 +1321,35 @@ extension Model: SystemCallManagerDelegate {
 }
 #endif
 
-@MainActor
-private extension Model {
-    func foundPeer(_ peerID: MCPeerID) {
-        guard peerID != myPeerId else {
+extension Model: PeerNetworkSessionDelegate {
+    func peerNetworkSessionDidConnect(_ peer: PeerID) {
+        guard connectedPeers.contains(peer) == false else {
             return
         }
-        
-        guard !session.connectedPeers.contains(peerID) else {
-            return
+
+        connectedPeers.append(peer)
+        connectedPeers.sort {
+            displayName(for: $0).localizedStandardCompare(displayName(for: $1)) == .orderedAscending
         }
-        
-        guard invitedPeers.insert(peerID).inserted else {
-            return
-        }
-        
-        print("ServiceBrowser found peer:", peerID)
-        
-        serviceBrowser.invitePeer(
-            peerID,
-            to: session,
-            withContext: nil,
-            timeout: 10
-        )
+        newConnection(peer: peer)
     }
-    
-    func didChangePeerState(peerID: MCPeerID, state: MCSessionState) {
-        print("peer", peerID, "didChangeState:", state.rawValue)
-        
-        if state == .connected {
-            newConnection(peer: peerID)
+
+    func peerNetworkSessionDidDisconnect(_ peer: PeerID) {
+        connectedPeers.removeAll { $0 == peer }
+        clearChatRequests(for: peer)
+
+        if callPeerID == peer {
+            finishCurrentCall(
+                notifyRemote: false,
+                reportToSystem: true,
+                systemEndReason: .failed
+            )
         }
-        
-        if state == .notConnected {
-            invitedPeers.remove(peerID)
-            clearChatRequests(for: peerID)
-            
-            if callPeerID == peerID {
-                finishCurrentCall(
-                    notifyRemote: false,
-                    reportToSystem: true,
-                    systemEndReason: .failed
-                )
-            }
-        }
-        
-        connectedPeers = session.connectedPeers
     }
-    
-    func didReceiveData(_ data: Data, from peerID: MCPeerID) {
-        guard session.connectedPeers.contains(peerID) else {
-            print("Ignoring data from disconnected peer:", peerID.displayName)
+
+    func peerNetworkSessionDidReceive(_ data: Data, from peer: PeerID) {
+        guard connectedPeers.contains(peer) else {
+            print("Ignoring data from disconnected peer:", peer.displayName)
             return
         }
         
@@ -1515,13 +1359,13 @@ private extension Model {
                 if let message = try? decoder.decode(ConnectMessage.self, from: payload.body) {
                     reciveInfo(
                         info: message,
-                        from: peerID,
+                        from: peer,
                         size: payload.body.count
                     )
                 }
                 
             case .voipAudio:
-                receiveCallAudio(payload.body, from: peerID)
+                receiveCallAudio(payload.body, from: peer)
             }
             
             return
@@ -1530,7 +1374,7 @@ private extension Model {
         if let message = try? decoder.decode(ConnectMessage.self, from: data) {
             reciveInfo(
                 info: message,
-                from: peerID,
+                from: peer,
                 size: data.count
             )
         }

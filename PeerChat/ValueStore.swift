@@ -1,20 +1,31 @@
 import SwiftUI
+import Observation
 #if canImport(DeviceKit)
 import DeviceKit
 #endif
 
-final class ValueStore: ObservableObject {
-    @AppStorage("nickname") var nickname = ValueStore.defaultNickname
-    @AppStorage("status") var status = ""
-    @AppStorage("deviceID") private var storedDeviceID = ""
+@Observable
+final class ValueStore {
+    private let defaults = UserDefaults.standard
+
+    var nickname: String {
+        get { defaults.string(forKey: "nickname") ?? ValueStore.defaultNickname }
+        set { defaults.set(newValue, forKey: "nickname") }
+    }
+
+    var status: String {
+        get { defaults.string(forKey: "status") ?? "" }
+        set { defaults.set(newValue, forKey: "status") }
+    }
     
     var deviceID: UUID {
-        if let existingID = UUID(uuidString: storedDeviceID) {
+        if let storedDeviceID = defaults.string(forKey: "deviceID"),
+           let existingID = UUID(uuidString: storedDeviceID) {
             return existingID
         }
         
         let newID = ValueStore.defaultDeviceID
-        storedDeviceID = newID.uuidString
+        defaults.set(newID.uuidString, forKey: "deviceID")
         
         return newID
     }

@@ -1,9 +1,11 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @EnvironmentObject private var store: ValueStore
+    @Environment(ValueStore.self) private var store
     
     var body: some View {
+        @Bindable var store = store
+
         List {
             TextField("Nickname", text: $store.nickname)
             Button("Reset Name", systemImage: "arrow.counterclockwise", action: store.resetNickname)
@@ -14,5 +16,5 @@ struct SettingsView: View {
 
 #Preview {
     SettingsView()
-        .environmentObject(ValueStore())
+        .environment(ValueStore())
 }

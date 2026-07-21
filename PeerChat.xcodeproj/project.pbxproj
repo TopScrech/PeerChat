@@ -285,7 +285,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2630;
-				LastUpgradeCheck = 2650;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					40EBFCE12A16E82D0041012C = {
 						CreatedOnToolsVersion = 14.2;
@@ -512,7 +512,7 @@
 				INFOPLIST_FILE = PeerChat/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Peer Chat";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Multipeer Connectivity";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Find and connect to nearby PeerChat devices";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record and send voice messages";
 				INFOPLIST_KEY_NSVoIPUsageDescription = Calls;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -546,7 +546,7 @@
 				INFOPLIST_FILE = PeerChat/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Peer Chat";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Multipeer Connectivity";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Find and connect to nearby PeerChat devices";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record and send voice messages";
 				INFOPLIST_KEY_NSVoIPUsageDescription = Calls;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -590,9 +590,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Peer Chat";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
-				INFOPLIST_KEY_NSBonjourServices = "_PeerChat._tcp _PeerChat._udp";
+				INFOPLIST_KEY_NSBonjourServices = "_peerchat._tcp _peerchat._udp";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Multipeer Connectivity";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Find and connect to nearby PeerChat devices";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record and send voice messages";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -635,9 +635,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Peer Chat";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
-				INFOPLIST_KEY_NSBonjourServices = "_PeerChat._tcp _PeerChat._udp";
+				INFOPLIST_KEY_NSBonjourServices = "_peerchat._tcp _peerchat._udp";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Multipeer Connectivity";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Find and connect to nearby PeerChat devices";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record and send voice messages";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -669,7 +669,7 @@
 				INFOPLIST_FILE = PeerChat/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Peer Chat";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Multipeer Connectivity";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Find and connect to nearby PeerChat devices";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record and send voice messages";
 				INFOPLIST_KEY_NSVoIPUsageDescription = Calls;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -699,7 +699,7 @@
 				INFOPLIST_FILE = PeerChat/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Peer Chat";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Multipeer Connectivity";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Find and connect to nearby PeerChat devices";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record and send voice messages";
 				INFOPLIST_KEY_NSVoIPUsageDescription = Calls;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -729,7 +729,7 @@
 				INFOPLIST_FILE = PeerChat/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Peer Chat";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Multipeer Connectivity";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Find and connect to nearby PeerChat devices";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record and send voice messages";
 				INFOPLIST_KEY_NSVoIPUsageDescription = Calls;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -744,7 +744,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 7;
-				XROS_DEPLOYMENT_TARGET = 1.0;
+				XROS_DEPLOYMENT_TARGET = "$(RECOMMENDED_XROS_DEPLOYMENT_TARGET)";
 			};
 			name = Debug;
 		};
@@ -759,7 +759,7 @@
 				INFOPLIST_FILE = PeerChat/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Peer Chat";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.social-networking";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Multipeer Connectivity";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Find and connect to nearby PeerChat devices";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Record and send voice messages";
 				INFOPLIST_KEY_NSVoIPUsageDescription = Calls;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -774,7 +774,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = 7;
-				XROS_DEPLOYMENT_TARGET = 1.0;
+				XROS_DEPLOYMENT_TARGET = "$(RECOMMENDED_XROS_DEPLOYMENT_TARGET)";
 			};
 			name = Release;
 		};

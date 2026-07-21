@@ -4,8 +4,8 @@
 <dict>
 	<key>NSBonjourServices</key>
 	<array>
-		<string>_PeerChat._tcp</string>
-		<string>_PeerChat._udp</string>
+		<string>_peerchat._tcp</string>
+		<string>_peerchat._udp</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>

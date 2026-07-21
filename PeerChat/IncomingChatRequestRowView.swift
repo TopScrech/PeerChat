@@ -1,9 +1,8 @@
 import SwiftUI
-@preconcurrency import MultipeerConnectivity
 
 struct IncomingChatRequestRowView: View {
     @Environment(Model.self) private var model
-    let peer: MCPeerID
+    let peer: PeerID
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {

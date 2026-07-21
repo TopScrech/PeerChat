@@ -118,7 +118,7 @@ struct MessageRow: View {
 //            Message(
 //                text: "Preview",
 //                from: Person(
-//                    MCPeerID(displayName: "Preview Device"),
+//                    PeerID(id: UUID(), displayName: "Preview Device"),
 //                    id: UUID(),
 //                    publicKey: "1234567890",
 //                    info: [:]

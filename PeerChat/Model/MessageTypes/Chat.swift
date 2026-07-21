@@ -1,9 +1,9 @@
-import MultipeerConnectivity
+import Foundation
 
 struct Chat {
     var id = UUID()
     
     var messages: [Message] = []
-    var peer: MCPeerID
+    var peer: PeerID
     var person: Person
 }

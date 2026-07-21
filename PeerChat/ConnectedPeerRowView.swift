@@ -1,9 +1,8 @@
 import ScrechKit
-@preconcurrency import MultipeerConnectivity
 
 struct ConnectedPeerRowView: View {
     @Environment(Model.self) private var model
-    let peer: MCPeerID
+    let peer: PeerID
     private let rowHeight: CGFloat = 56
     
     var body: some View {
