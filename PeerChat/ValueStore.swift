@@ -1,7 +1,7 @@
 import SwiftUI
 import Observation
-#if canImport(DeviceKit)
-import DeviceKit
+#if canImport(Device)
+import Device
 #endif
 
 @Observable
@@ -35,10 +35,8 @@ final class ValueStore {
     }
     
     private static var defaultNickname: String {
-#if canImport(DeviceKit)
-        let name = Device.current.description
-        
-        if !name.isEmpty {
+#if canImport(Device)
+        if let name = Device.current.name, !name.isEmpty {
             return name
         }
 #endif

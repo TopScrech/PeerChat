@@ -25,9 +25,9 @@
       },
     }, {
       "kind": "remote",
-      "repository": "https://github.com/devicekit/DeviceKit",
+      "repository": "https://github.com/TopScrech/Device",
       "version": {
-        "up-to-next-major-version": "5.7.0",
+        "branch": "main",
       },
     }, {
       "kind": "remote",
@@ -105,16 +105,8 @@
       ],
       "package-product-members": [
         {
-          "package": "DeviceKit",
-          "product-name": "DeviceKit",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "DeviceKit",
-          "product-name": "DeviceKit",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "DeviceKit",
-          "product-name": "DeviceKit",
+          "package": "Device",
+          "product-name": "Device",
           "build-phase": { "build-phase": "frameworks" },
         }, {
           "package": "QuickLooking",
@@ -206,16 +198,8 @@
       ],
       "package-product-members": [
         {
-          "package": "DeviceKit",
-          "product-name": "DeviceKit",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "DeviceKit",
-          "product-name": "DeviceKit",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "DeviceKit",
-          "product-name": "DeviceKit",
+          "package": "Device",
+          "product-name": "Device",
           "build-phase": { "build-phase": "frameworks" },
         }, {
           "package": "ScrechKit",
@@ -365,16 +349,8 @@
       ],
       "package-product-members": [
         {
-          "package": "DeviceKit",
-          "product-name": "DeviceKit",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "DeviceKit",
-          "product-name": "DeviceKit",
-          "build-phase": { "build-phase": "frameworks" },
-        }, {
-          "package": "DeviceKit",
-          "product-name": "DeviceKit",
+          "package": "Device",
+          "product-name": "Device",
           "build-phase": { "build-phase": "frameworks" },
         }, {
           "package": "QuickLooking",
